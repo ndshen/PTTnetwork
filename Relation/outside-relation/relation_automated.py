@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import datetime
 from pymongo import MongoClient
 import subprocess
@@ -15,11 +15,13 @@ SLMargs=['1','1','3','10','10','0','1']
 # random_seed	Seed of the random number generator
 # print_output	Whether or not to print output to the console (0 = no; 1 = yes)
 
-SLMinputF='SLMinputA'
-visualinputF='visualinputA'
-SLMoutputF='SLMoutputA'
-visualoutputF='community'
-mongoInputF="group"
+file_dir = os.path.join(os.path.dirname(__file__), '../../../tempData/outside-relation/')
+
+SLMinputF=file_dir+'SLMinputA'
+visualinputF=file_dir+'visualinputA'
+SLMoutputF=file_dir+'SLMoutputA'
+visualoutputF=file_dir+'community'
+mongoInputF=file_dir+"group"
 
 # relation below gate will be ignored and will not be print in the output
 GATE=0
@@ -27,7 +29,7 @@ GATE=0
 HOST='127.0.0.1'
 PORT=27020
 USERNAME='rootNinja'
-DBNAME='test_ver2_901'
+DBNAME='test_714'
 client=MongoClient()
 
 def usage():
@@ -151,9 +153,9 @@ def main(args):
     if MODE == 'append':
         relationSkip=countRows()-1
 
-    # iterateRelation(relationCollection, relationSkip, db)
+    iterateRelation(relationCollection, relationSkip, db)
 
-    p =subprocess.Popen(['java','-jar','ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
+    p =subprocess.Popen(['java','-jar','../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
     returnCode=p.wait()
 
     if returnCode != 0:
