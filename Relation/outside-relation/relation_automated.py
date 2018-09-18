@@ -17,9 +17,10 @@ SLMargs=['1','1','3','10','10','0','1']
 
 file_dir = os.path.join(os.path.dirname(__file__), '../../../tempData/outside-relation/')
 
-SLMinputF=file_dir+'SLMinputA'
-visualinputF=file_dir+'visualinputA'
-SLMoutputF=file_dir+'SLMoutputA'
+
+SLMinputF=file_dir+'SLMinput'
+visualinputF=file_dir+'visualinput'
+SLMoutputF=file_dir+'SLMoutput'
 visualoutputF=file_dir+'community'
 mongoInputF=file_dir+"group"
 
@@ -102,7 +103,7 @@ def finalOutput():
         nodeJson = "["+nodeStr+ "]"
         parsed = json.loads(finalStr)
         parsed_mongo = json.loads(nodeJson)
-        # print(json.dumps(parsed,indent=2))
+
         f3.write(json.dumps(parsed, indent=2))
         f4.write(json.dumps(parsed_mongo, indent=2))
 
@@ -123,6 +124,7 @@ def iterateRelation(relationCollection, relationSkip, db):
     doneCount = relationSkip
     print("Processing the relations...")
     with open(SLMinputF, "a+") as f, open(visualinputF, "a+") as f2:
+        
         for doc in relationCollection.find(skip=relationSkip, no_cursor_timeout=True):
             userA=doc['user1id']
             userB=doc['user2id']
@@ -163,7 +165,7 @@ def main(args):
     else:
         finalOutput()
     
-    updateGroup.main(mongoInputF, DBNAME, args[1])
+    # updateGroup.main(mongoInputF, DBNAME, args[1])
 
 if __name__ == "__main__":
     main(sys.argv)
