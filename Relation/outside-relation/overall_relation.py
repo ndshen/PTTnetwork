@@ -4,7 +4,6 @@ from datetime import timedelta
 from pymongo import MongoClient
 import subprocess
 import json
-import updateGroup
 
 SLMargs=['1','1','3','10','10','0','1']
 # modularity_function	Modularity function (1 = standard; 2 = alternative)
@@ -143,8 +142,8 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
             update_progress(doneCount/relationCount)
             # print("{}\t{}\t{}".format(userA,userB,relation))
 
-def finalOutput():
-    with open(SLMoutputF,"r") as f1, open(visualinputF,"r") as f2, open(visualoutputF,"a") as f3, open(mongoInputF,"a") as f4:
+def finalOutput(date, db):
+    with open(SLMoutputF,"r") as f1, open(visualinputF,"r") as f2, open(mongoInputF,"a") as f4:
         SLMline=f1.read().split('\n')
         idCount=0
         nodeStr=''
@@ -155,13 +154,48 @@ def finalOutput():
             nodeStr+=nodesLine
             idCount+=1
         nodeStr=nodeStr[:-1]
-        finalStr="{\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
+        finalStr="{\"date\":"+date+",\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
         nodeJson = "["+nodeStr+ "]"
         parsed = json.loads(finalStr)
         parsed_mongo = json.loads(nodeJson)
-
-        f3.write(json.dumps(parsed, indent=2))
+        visualCollection = db["Visualization"]
+        visualCollection.insert_one(parsed)
+        # open(visualoutputF,"a") as f3
+        # f3.write(json.dumps(parsed, indent=2))
         f4.write(json.dumps(parsed_mongo, indent=2))
+
+# get group from group.txt
+def group_reconstruct(oldSLMoutputF, date):
+    group_document = dict()
+    group_ids= []
+    groups = []
+    with open (oldSLMoutputF) as data:
+        group_info = json.loads(data.read())
+        for info in group_info:
+            if info['group'] not in group_ids:
+                group_ids.append(info['group'])
+                groups.append({'overall_group_users':[info['id']], 'overall_group_id': info['group'] })
+            else:
+                for group in groups:
+                    if group['id'] == info['group']:
+                        group['overall_group_users'].append(info['id'])
+        
+        group_ids.sort()
+
+        group_document = {
+            "date":date,
+            "overall_groupID_list":group_ids,
+            "overall_group_list":groups
+        }
+
+    print('groups reconstruction finished')
+    return group_document
+
+def updateGroup(fileName, date, db):
+    group_document = group_reconstruct(fileName, date)
+    groupCollection = db['Group']
+    groupCollection.insert_one(group_document)
+
 
 def main(dbPassword, date, day_range = 7, append=False):
     createFileNameTail(date, append)
@@ -182,15 +216,18 @@ def main(dbPassword, date, day_range = 7, append=False):
             os.remove(visualinputF)
     
     iterateRelation(relationCollection, relationSkip, db, day_range, date)
-    p =subprocess.Popen(['java','-jar','../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
+    # client.close()
+
+    p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
     returnCode = p.wait()
 
     if returnCode != 0:
         print("SLM process error")
         exit(1)
     else:
-        finalOutput()
+        finalOutput(date, db)
 
+    updateGroup(mongoInputF, date, db)
 
 if __name__ == "__main__":
     main(dbPassword=sys.argv[1], date=sys.argv[2], append=sys.argv[3])
