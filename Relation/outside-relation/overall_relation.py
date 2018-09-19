@@ -4,6 +4,7 @@ from datetime import timedelta
 from pymongo import MongoClient
 import subprocess
 import json
+import re
 
 SLMargs=['1','1','3','10','10','0','1']
 # modularity_function	Modularity function (1 = standard; 2 = alternative)
@@ -28,7 +29,7 @@ GATE=0
 HOST='127.0.0.1'
 PORT=27020
 USERNAME='rootNinja'
-DBNAME='test_714'
+DBNAME='CrawlGossiping_formal'
 client=MongoClient()
 
 
@@ -83,9 +84,9 @@ def countRows():
 def validArticle(articleList, date, day_range):
     validList = []
     end_date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    start_date = end_date - timedelta(days=day_range)
+    start_date = end_date - timedelta(days=int(day_range))
     for item in articleList:
-        item_date = datetime.datetime.strptime(item[1], "%Y-%m-%d")
+        item_date = datetime.datetime.strptime(item["art_time"], "%Y-%m-%d")
         if (item_date < end_date) and (item_date > start_date):
             validList.append(item)
     
@@ -93,18 +94,21 @@ def validArticle(articleList, date, day_range):
 
 def validUserList(user, day_range, date):
     end_date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    start_date = end_date - timedelta(days=day_range)
+    start_date = end_date - timedelta(days=int(day_range))
     messageList = user["Message"]
     validMessageList = []
     for message in messageList:
-        message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M")
-        if (message_date < end_date) and (message > start_date):
-            validMessageList.append(message)
+        if message == '':
+            continue
+        if re.match(r"\d+/\d+ \d{1,2}:\d{2}", message["Time"]):
+            message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M")
+            if (message_date < end_date) and (message_date > start_date):
+                validMessageList.append(message)
     
     articleList = user["Article"]
     validArticleList = validArticle(articleList, date, day_range)
 
-    return validMessageList + validArticleList
+    return (validMessageList + validArticleList)
 
 
 def computeRelation(userA, userB, intersection,db, day_range, date):
@@ -114,6 +118,7 @@ def computeRelation(userA, userB, intersection,db, day_range, date):
     if A is None or B is None:
         return(-1)
     else:
+
         listA = validUserList(A, day_range, date)
         listB = validUserList(B, day_range, date)
         union= len(listA)+ len(listB) - intersection
@@ -132,7 +137,7 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
         for doc in relationCollection.find(skip=relationSkip, no_cursor_timeout=True, batch_size=30):
             userA=doc['user1id']
             userB=doc['user2id']
-            intersectionList = validArticle(doc['ArticleId'], date, day_range)
+            intersectionList = validArticle(doc['Articleid'], date, day_range)
             relation=computeRelation(userA,userB, len(intersectionList), db, day_range, date)
             if relation >= GATE:
                 f.write('{}\t{}\t{}\n'.format(userA, userB, relation))
@@ -230,4 +235,6 @@ def main(dbPassword, date, day_range = 7, append=False):
     updateGroup(mongoInputF, date, db)
 
 if __name__ == "__main__":
-    main(dbPassword=sys.argv[1], date=sys.argv[2], append=sys.argv[3])
+
+    main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3] ,append=sys.argv[4])
+    # python .\Relation\outside-relation\overall_relation.py swordtight 2018-07-20 1 False

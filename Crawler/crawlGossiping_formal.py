@@ -14,6 +14,7 @@ import requests  # package for request something form website
 import urllib3
 from bs4 import BeautifulSoup  # parse tool
 from pymongo import MongoClient
+import mes_black_list
 
 urllib3.disable_warnings()
 month = dict()
@@ -67,7 +68,7 @@ def main(args):
     elif len(args) != 3 and len(args) != 5: 
         print_log("Please enter MongoDB password and pages (and start date and end date) to crawl")
         sys.exit(1)
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.DEBUG,filename="../../tempData/crawler/download/formal_log.txt")
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.DEBUG,filename="../../tempData/crawler/download/formal_log.txt")#filename="../../tempData/crawler/download/formal_log.txt"
     global password
     #global pagetocrawl
     global idforUser
@@ -283,7 +284,7 @@ def download(articles,res): #download the content, choose what attr will be craw
         if flagfortitle == 1 : 
             print_log("skip for 公告 or 協尋")
             continue
-        if (time_value or author_value or title_value) is None:
+        if time_value is None or author_value is None or title_value is None:
             print_log('error value when crawling')
             continue
         # crawl within 7 seven days
@@ -451,7 +452,14 @@ def download(articles,res): #download the content, choose what attr will be craw
             # commentor equal author 
             if name == author_value:
                 continue
-
+            # ignore the content which has no relation with article
+            skip_mes = 0
+            for black_list in mes_black_list.BLACK_LIST:
+                if content.find(black_list) != -1:
+                    skip_mes = 1
+                    break
+            if skip_mes:
+                continue
             insert_user = {
                 "Name": name, "id":idforUser,
                 "Nickname":"", "CorrelatedUser":[],
@@ -492,16 +500,16 @@ def download(articles,res): #download the content, choose what attr will be craw
                 all_mes_user_id.append(idforUser)
                 collection.insert(insert_user)
                 if author_id > idforUser :
-                    count_relation(idforUser, author_id, article_id)
+                    count_relation(idforUser, author_id, article_id, time_value)
                 else:
-                    count_relation(author_id, idforUser, article_id)
+                    count_relation(author_id, idforUser, article_id, time_value)
                 idforUser += 1
             else:
                 all_mes_user_id.append(temp_user['id'])
                 if author_id > temp_user['id'] :
-                    count_relation(temp_user['id'], author_id, article_id)
+                    count_relation(temp_user['id'], author_id, article_id, time_value)
                 else:
-                    count_relation(author_id, temp_user['id'], article_id)
+                    count_relation(author_id, temp_user['id'], article_id, time_value)
                 if check_new_aritcle == 1 :
                     collection.find_one_and_update(
                         {'id': temp_user['id']
@@ -528,7 +536,7 @@ def download(articles,res): #download the content, choose what attr will be craw
                             }
                         })
 
-        update_relation_between_commentor(all_mes_user_id, article_id)
+        update_relation_between_commentor(all_mes_user_id, article_id, time_value)
 
         insert_article['Boo'] = Boo_list
         insert_article['Push'] = Push_list
@@ -550,15 +558,17 @@ def download(articles,res): #download the content, choose what attr will be craw
             )
         # check the author if exist in database, and insert to database
         collection = db['User']
+        art_time = str(datetime.strptime(time_value, '%a %b %d %H:%M:%S %Y').date())
         if check_new_author == 1:
-            Author['Article'].append(article_id)
+            save_data = {'art_id': article_id, 'art_time': art_time}
+            Author['Article'].append(save_data)
             collection.insert(Author)
         else:
             collection.update_one({
                 'id': author_id
                 },{
                     "$addToSet": {
-                        "Article": article_id
+                        "Article": {'art_id': article_id, 'art_time': art_time}
                     }
                 })
         print_log('Article id :' + str(article_id) + 'finished')
@@ -596,7 +606,7 @@ def check_duplicate(category, data):
     #else:
 
 
-def update_relation_between_commentor(mes_list, art_id):
+def update_relation_between_commentor(mes_list, art_id, art_time):
     length = len(mes_list)
     mes_list.sort()
     mes_list = list(set(mes_list))
@@ -604,27 +614,29 @@ def update_relation_between_commentor(mes_list, art_id):
     for index, user_id in enumerate(mes_list):
         for i in range(index+1, length):
             if user_id < mes_list[i]:
-                count_relation(user_id, mes_list[i], art_id)
+                count_relation(user_id, mes_list[i], art_id, art_time)
             else:
-                count_relation(mes_list[i], user_id, art_id)
+                count_relation(mes_list[i], user_id, art_id, art_time)
 
 
-def count_relation(userA_id, userB_id, Article_id):  # update the relation collection
+def count_relation(userA_id, userB_id, Article_id, art_time):  # update the relation collection
     print_log("Update relation between " + str(userA_id)+ " and " + str(userB_id))
     collection = db["Relation"]
     relation = collection.find_one({"user1id":userA_id,"user2id":userB_id })
     duplicate_id = 0
+    art_time = str(datetime.strptime(art_time, '%a %b %d %H:%M:%S %Y').date())
     if userA_id != userB_id :
         if relation != None:
             #print_log(artidlist["user1id"])
             artidlist = relation["Articleid"]
             if artidlist != None:
                 for exist_id in artidlist:
-                    if exist_id == Article_id:
+                    if exist_id['art_id'] == Article_id:
                         duplicate_id = 1
                         break
                 if duplicate_id != 1:  # avoid duplicated count message in one article
-                    artidlist.append(Article_id)
+                    save_data = {'art_id': Article_id, 'art_time': art_time}
+                    artidlist.append(save_data)
                 
                     collection.update_one(
                     {"user1id":userA_id,"user2id":userB_id },
@@ -651,10 +663,10 @@ def count_relation(userA_id, userB_id, Article_id):  # update the relation colle
                     # record correlated user id in user with larger id in User collection 
             updateCorrelateduser(userA_id, userB_id)
                 
-
             oneRelation["Intersection"]+=1
             intersectionarticlelist=[]
-            intersectionarticlelist.append(Article_id)    
+            save_data = {'art_id': Article_id, 'art_time': art_time}
+            intersectionarticlelist.append(save_data)    
             oneRelation["Articleid"]=intersectionarticlelist
 
             collection=db["Relation"]
