@@ -17,11 +17,11 @@ SLMargs=['1','1','3','10','10','0','1']
 
 data_file_dir = os.path.join(os.path.dirname(__file__), '../../../tempData/outside-relation/')
 
-SLMinputF=data_file_dir+'SLMinput'
-visualinputF=data_file_dir+'visualinput'
-SLMoutputF=data_file_dir+'SLMoutput'
-visualoutputF=data_file_dir+'community'
-mongoInputF=data_file_dir+"group"
+SLMinputF=data_file_dir+'SLMinput_test'
+visualinputF=data_file_dir+'visualinput_test'
+SLMoutputF=data_file_dir+'SLMoutput_test'
+visualoutputF=data_file_dir+'community_test'
+mongoInputF=data_file_dir+"group_test"
 
 # relation below gate will be ignored and will not be print in the output
 GATE=0
@@ -29,7 +29,7 @@ GATE=0
 HOST='127.0.0.1'
 PORT=27020
 USERNAME='rootNinja'
-DBNAME='CrawlGossiping_formal'
+DBNAME='CrawlGossiping_test'
 client=MongoClient()
 
 
@@ -101,6 +101,7 @@ def validUserList(user, day_range, date):
         if message == '':
             continue
         if re.match(r"\d+/\d+ \d{1,2}:\d{2}", message["Time"]):
+            try:
                 message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M").replace(year = end_date.year)
                 if (message_date <= end_date) and (message_date >= start_date):
                     # print(message_date, start_date, end_date)
@@ -147,7 +148,7 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
                 visualinputLine="\"source\": {}, \"target\": {},\"weight\" : {}".format(userA,userB,relation)
                 f2.write("{"+visualinputLine+"},\n")
             doneCount += 1
-            update_progress(doneCount/relationCollection.count())
+            update_progress(doneCount/relationCount)
             # print("{}\t{}\t{}".format(userA,userB,relation))
 
 def finalOutput(date, db):
@@ -208,7 +209,7 @@ def updateGroup(fileName, date, db):
 
 def main(dbPassword, date, day_range = 7, append=False):
 
-    s = datetime.datetime.now()
+    s= datetime.datetime.now()
 
     createFileNameTail(date, append)
     
@@ -254,4 +255,4 @@ if __name__ == "__main__":
         main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3])
     elif len(sys.argv) ==5:
         main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3] ,append=True)
-    # python .\Relation\outside-relation\overall_relation.py swordtight 2018-09-20 1
+    # python .\Relation\outside-relation\overall_relation_test.py swordtight 2018-07-20 1
