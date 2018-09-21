@@ -18,6 +18,7 @@ SLMargs=['1','1','3','10','10','0','1']
 data_file_dir = os.path.join(os.path.dirname(__file__), '../../../tempData/outside-relation/')
 
 SLMinputF=data_file_dir+'SLMinput'
+SLMinput_mapped=data_file_dir+'SLMinput_mapped'
 visualinputF=data_file_dir+'visualinput'
 SLMoutputF=data_file_dir+'SLMoutput'
 visualoutputF=data_file_dir+'community'
@@ -53,7 +54,7 @@ def update_progress(progress):
     sys.stdout.flush()
 
 def createFileNameTail(date, append):
-    global SLMinputF,visualinputF,SLMoutputF,visualoutputF, mongoInputF
+    global SLMinputF, SLMinput_mapped, visualinputF,SLMoutputF,visualoutputF, mongoInputF
 
     if append is True:
         name_tail="_"+date+".txt"
@@ -64,6 +65,7 @@ def createFileNameTail(date, append):
         name_tail_json="_{}-{}-{}.json".format(now.year, now.month, now.day)
 
     SLMinputF=SLMinputF+name_tail
+    SLMinput_mapped=SLMinput_mapped+name_tail
     visualinputF+=name_tail
     SLMoutputF+=name_tail
     visualoutputF+=name_tail_json
@@ -100,14 +102,14 @@ def validUserList(user, day_range, date):
     for message in messageList:
         if message == '':
             continue
-        if re.match(r"\d+/\d+ \d{1,2}:\d{2}", message["Time"]):
-            try:
-                message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M").replace(year = end_date.year)
-                if (message_date <= end_date) and (message_date >= start_date):
-                    # print(message_date, start_date, end_date)
-                    validMessageList.append(message)
-            except ValueError:
-                continue
+        # if re.match(r"\d+/\d+ \d{1,2}:\d{2}", message["Time"]):
+        try:
+            message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M").replace(year = end_date.year)
+            if (message_date <= end_date) and (message_date >= start_date):
+                # print(message_date, start_date, end_date)
+                validMessageList.append(message)
+        except ValueError:
+            continue
     
     articleList = user["Article"]
     validArticleList = validArticle(articleList, date, day_range)
@@ -132,26 +134,58 @@ def computeRelation(userA, userB, intersection,db, day_range, date):
 
 
 def iterateRelation(relationCollection, relationSkip, db, day_range, date):
-    relationCount = relationCollection.count()
-    doneCount = relationSkip
-    print("Processing the relations...")
+    # relationCount = relationCollection.count()
+    total_user = set()
 
+    if day_range <= 4:
+        minimal_intersection = 5
+    else:
+        minimal_intersection = 10
+
+    valid_date_range = []
+    for i in range(day_range):
+        d = datetime.datetime.strptime(date, "%Y-%m-%d")
+        valid_date_range.append((d-datetime.timedelta(days=i)).strftime("%Y-%m-%d"))
+        
+    doneCount = relationSkip
+    cursor = relationCollection.find({"Articleid":{"$elemMatch":{"art_time":{"$in":valid_date_range}}}}, skip=relationSkip, no_cursor_timeout=True, batch_size=30)
+   
+    print("Processing the relations...")
     with open(SLMinputF, "a+") as f, open(visualinputF, "a+") as f2:
         
-        for doc in relationCollection.find(skip=relationSkip, no_cursor_timeout=True, batch_size=30):
+        for doc in cursor:
+            intersectionList = validArticle(doc['Articleid'], date, day_range)
+            if len(intersectionList) < minimal_intersection:
+                doneCount += 1
+                continue
+            
             userA=doc['user1id']
             userB=doc['user2id']
-            intersectionList = validArticle(doc['Articleid'], date, day_range)
             relation=computeRelation(userA,userB, len(intersectionList), db, day_range, date)
-            if relation >= GATE:
+            if relation > GATE:
                 f.write('{}\t{}\t{}\n'.format(userA, userB, relation))
                 visualinputLine="\"source\": {}, \"target\": {},\"weight\" : {}".format(userA,userB,relation)
                 f2.write("{"+visualinputLine+"},\n")
-            doneCount += 1
-            update_progress(doneCount/relationCollection.count())
-            # print("{}\t{}\t{}".format(userA,userB,relation))
+                total_user.add(userA)
+                total_user.add(userB)
 
-def finalOutput(date, db):
+            doneCount += 1
+            print("Done Relation: {}".format(doneCount), end="\r")
+            # update_progress(doneCount/relationCollection.count())
+            # print("{}\t{}\t{}".format(userA,userB,relation))
+    return(list(total_user))
+
+def mapSLMinput(total_user_list):
+
+    with open(SLMinputF, "r") as f, open(SLMinput_mapped, "w") as f2:
+        lines = f.read().split('\n')
+        for line in lines:
+            if line == '':
+                continue
+            nodes = line.split('\t')
+            f2.write("{}\t{}\t{}\n".format(total_user_list.index(nodes[0]), total_user_list.index(nodes[1]), nodes[2]))
+
+def finalOutput(date, db, total_user_list):
     with open(SLMoutputF,"r") as f1, open(visualinputF,"r") as f2, open(mongoInputF,"a") as f4:
         SLMline=f1.read().split('\n')
         idCount=0
@@ -159,7 +193,7 @@ def finalOutput(date, db):
         for line in SLMline:
             if line == '':
                 break
-            nodesLine='{\"id\" : '+str(idCount)+', \"group\": '+line+'},'
+            nodesLine='{\"id\" : '+total_user_list[idCount]+', \"group\": '+line+'},'
             nodeStr+=nodesLine
             idCount+=1
         nodeStr=nodeStr[:-1]
@@ -218,21 +252,22 @@ def main(dbPassword, date, day_range = 7, append=False):
     relationCollection=db['Relation']
     relationSkip=0
     
-    # if append is True:
-    #     if countRows() is not False:
-    #         relationSkip = countRows() - 1
-    # # if there is already a file for that day, delete it
-    # else:
-    #     if os.path.isfile(SLMinputF):
-    #         os.remove(SLMinputF)
-    #     if os.path.isfile(visualinputF):
-    #         os.remove(visualinputF)
-    #     if os.path.isfile(SLMoutputF):
-    #         os.remove(SLMoutputF)
-    #     if os.path.isfile(mongoInputF):
-    #         os.remove(mongoInputF)
+    if append is True:
+        if countRows() is not False:
+            relationSkip = countRows() - 1
+    # if there is already a file for that day, delete it
+    else:
+        if os.path.isfile(SLMinputF):
+            os.remove(SLMinputF)
+        if os.path.isfile(visualinputF):
+            os.remove(visualinputF)
+        if os.path.isfile(SLMoutputF):
+            os.remove(SLMoutputF)
+        if os.path.isfile(mongoInputF):
+            os.remove(mongoInputF)
     
-    # iterateRelation(relationCollection, relationSkip, db, day_range, date)
+    total_user_list = iterateRelation(relationCollection, relationSkip, db, day_range, date)
+    mapSLMinput(total_user_list)
 
     p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
     returnCode = p.wait()
@@ -241,17 +276,16 @@ def main(dbPassword, date, day_range = 7, append=False):
         print("SLM process error")
         exit(1)
     else:
-        finalOutput(date, db)
+        finalOutput(date, db, total_user_list)
 
     updateGroup(mongoInputF, date, db)
 
     e = datetime.datetime.now()
-
-    print("This script spent: ", e-s)
+    print("Finished, spent: ", e-s)
 
 if __name__ == "__main__":
     if len(sys.argv) == 4:
         main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3])
     elif len(sys.argv) ==5:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3] ,append=True)
+        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]) ,append=True)
     # python .\Relation\outside-relation\overall_relation.py swordtight 2018-09-20 1
