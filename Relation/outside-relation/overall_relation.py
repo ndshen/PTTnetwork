@@ -101,6 +101,7 @@ def validUserList(user, day_range, date):
         if message == '':
             continue
         if re.match(r"\d+/\d+ \d{1,2}:\d{2}", message["Time"]):
+            try:
                 message_date = datetime.datetime.strptime(message["Time"], "%m/%d %H:%M").replace(year = end_date.year)
                 if (message_date <= end_date) and (message_date >= start_date):
                     # print(message_date, start_date, end_date)
@@ -217,22 +218,21 @@ def main(dbPassword, date, day_range = 7, append=False):
     relationCollection=db['Relation']
     relationSkip=0
     
-    if append is True:
-        if countRows() is not False:
-            relationSkip = countRows() - 1
-    # if there is already a file for that day, delete it
-    else:
-        if os.path.isfile(SLMinputF):
-            os.remove(SLMinputF)
-        if os.path.isfile(visualinputF):
-            os.remove(visualinputF)
-        if os.path.isfile(SLMoutputF):
-            os.remove(SLMoutputF)
-        if os.path.isfile(mongoInputF):
-            os.remove(mongoInputF)
+    # if append is True:
+    #     if countRows() is not False:
+    #         relationSkip = countRows() - 1
+    # # if there is already a file for that day, delete it
+    # else:
+    #     if os.path.isfile(SLMinputF):
+    #         os.remove(SLMinputF)
+    #     if os.path.isfile(visualinputF):
+    #         os.remove(visualinputF)
+    #     if os.path.isfile(SLMoutputF):
+    #         os.remove(SLMoutputF)
+    #     if os.path.isfile(mongoInputF):
+    #         os.remove(mongoInputF)
     
-    iterateRelation(relationCollection, relationSkip, db, day_range, date)
-    # client.close()
+    # iterateRelation(relationCollection, relationSkip, db, day_range, date)
 
     p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
     returnCode = p.wait()
