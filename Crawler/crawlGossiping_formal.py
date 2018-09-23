@@ -310,6 +310,7 @@ def download(articles,res): #download the content, choose what attr will be craw
                         break
                 except :
                     print_log("error", pubdate)
+                    continue
                 #print_log(latesttime,pubdate)
             try:
                 pubdate = datetime.strptime(pubdate_str[3].text, '%a %b %d %H:%M:%S %Y')
@@ -323,6 +324,7 @@ def download(articles,res): #download the content, choose what attr will be craw
             except Exception as e:
                 print(e)
                 print_log("error", pubdate)
+                continue
         
             
         ipaddressname="span.f2"
@@ -558,7 +560,11 @@ def download(articles,res): #download the content, choose what attr will be craw
             )
         # check the author if exist in database, and insert to database
         collection = db['User']
-        art_time = str(datetime.strptime(time_value, '%a %b %d %H:%M:%S %Y').date())
+        try:
+            art_time = str(datetime.strptime(time_value, '%a %b %d %H:%M:%S %Y').date())
+        except:
+            print('error time format')
+            continue
         if check_new_author == 1:
             save_data = {'art_id': article_id, 'art_time': art_time}
             Author['Article'].append(save_data)
@@ -624,7 +630,11 @@ def count_relation(userA_id, userB_id, Article_id, art_time):  # update the rela
     collection = db["Relation"]
     relation = collection.find_one({"user1id":userA_id,"user2id":userB_id })
     duplicate_id = 0
-    art_time = str(datetime.strptime(art_time, '%a %b %d %H:%M:%S %Y').date())
+    try:
+        art_time = str(datetime.strptime(art_time, '%a %b %d %H:%M:%S %Y').date())
+    except:
+        print('error time format')
+        return
     if userA_id != userB_id :
         if relation != None:
             #print_log(artidlist["user1id"])

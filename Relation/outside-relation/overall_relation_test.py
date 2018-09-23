@@ -251,8 +251,9 @@ def main(dbPassword, date, day_range = 7, append=False):
     print("This script spent: ", e-s)
 
 if __name__ == "__main__":
-    if len(sys.argv) == 4:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3])
-    elif len(sys.argv) ==5:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3] ,append=True)
+    print(os.path.dirname(__file__))
+    # if len(sys.argv) == 4:
+    #     main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3])
+    # elif len(sys.argv) ==5:
+    #     main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3] ,append=True)
     # python .\Relation\outside-relation\overall_relation_test.py swordtight 2018-07-20 1

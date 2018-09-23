@@ -33,6 +33,7 @@ USERNAME='rootNinja'
 DBNAME='CrawlGossiping_formal'
 client=MongoClient()
 
+total_article = set()
 
 def update_progress(progress):
     barLength = 30 # Modify this to change the length of the progress bar
@@ -53,16 +54,11 @@ def update_progress(progress):
     sys.stdout.write(text)
     sys.stdout.flush()
 
-def createFileNameTail(date, append):
+def createFileNameTail(date, day_range):
     global SLMinputF, SLMinput_mapped, visualinputF,SLMoutputF,visualoutputF, mongoInputF
 
-    if append is True:
-        name_tail="_"+date+".txt"
-        name_tail_json="_"+date+".json"
-    else:
-        now=datetime.datetime.now()
-        name_tail="_{}-{}-{}.txt".format(now.year, now.month, now.day)
-        name_tail_json="_{}-{}-{}.json".format(now.year, now.month, now.day)
+    name_tail="_"+date+"_"+str(day_range)+".txt"
+    name_tail_json="_"+date+"_"+str(day_range)+".json"
 
     SLMinputF=SLMinputF+name_tail
     SLMinput_mapped=SLMinput_mapped+name_tail
@@ -90,7 +86,7 @@ def validArticle(articleList, date, day_range):
     for item in articleList:
         item_date = datetime.datetime.strptime(item["art_time"], "%Y-%m-%d")
         if (item_date <= end_date) and (item_date >= start_date):
-            validList.append(item)
+            validList.append(int(item["art_id"]))
     
     return validList
 
@@ -146,10 +142,12 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
     for i in range(day_range):
         d = datetime.datetime.strptime(date, "%Y-%m-%d")
         valid_date_range.append((d-datetime.timedelta(days=i)).strftime("%Y-%m-%d"))
-        
+    
+    global total_article
     doneCount = relationSkip
     cursor = relationCollection.find({"Articleid":{"$elemMatch":{"art_time":{"$in":valid_date_range}}}}, skip=relationSkip, no_cursor_timeout=True, batch_size=30)
-   
+    # print("Cursor Count: "+str(cursor.count()))
+    print(valid_date_range)
     print("Processing the relations...")
     with open(SLMinputF, "a+") as f, open(visualinputF, "a+") as f2:
         
@@ -158,7 +156,7 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
             if len(intersectionList) < minimal_intersection:
                 doneCount += 1
                 continue
-            
+            total_article = total_article.union(set(intersectionList))
             userA=doc['user1id']
             userB=doc['user2id']
             relation=computeRelation(userA,userB, len(intersectionList), db, day_range, date)
@@ -166,12 +164,12 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
                 f.write('{}\t{}\t{}\n'.format(userA, userB, relation))
                 visualinputLine="\"source\": {}, \"target\": {},\"weight\" : {}".format(userA,userB,relation)
                 f2.write("{"+visualinputLine+"},\n")
-                total_user.add(userA)
-                total_user.add(userB)
+                total_user.add(str(userA))
+                total_user.add(str(userB))
 
             doneCount += 1
             print("Done Relation: {}".format(doneCount), end="\r")
-            # update_progress(doneCount/relationCollection.count())
+            # update_progress(doneCount/cursor.count())
             # print("{}\t{}\t{}".format(userA,userB,relation))
     return(list(total_user))
 
@@ -185,7 +183,7 @@ def mapSLMinput(total_user_list):
             nodes = line.split('\t')
             f2.write("{}\t{}\t{}\n".format(total_user_list.index(nodes[0]), total_user_list.index(nodes[1]), nodes[2]))
 
-def finalOutput(date, db, total_user_list):
+def finalOutput(date, day_range, db, total_user_list):
     with open(SLMoutputF,"r") as f1, open(visualinputF,"r") as f2, open(mongoInputF,"a") as f4:
         SLMline=f1.read().split('\n')
         idCount=0
@@ -198,7 +196,7 @@ def finalOutput(date, db, total_user_list):
             idCount+=1
         nodeStr=nodeStr[:-1]
 
-        finalStr="{\"date\":\""+date+"\",\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
+        finalStr="{\"date\":\""+date+"\",\"day_range\":"+str(day_range)+",\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
         nodeJson = "["+nodeStr+ "]"
         parsed = json.loads(finalStr)
         parsed_mongo = json.loads(nodeJson)
@@ -209,7 +207,7 @@ def finalOutput(date, db, total_user_list):
         f4.write(json.dumps(parsed_mongo, indent=2))
 
 # get group from group.txt
-def group_reconstruct(oldSLMoutputF, date):
+def group_reconstruct(oldSLMoutputF, date, day_range,total_user_list):
     group_document = dict()
     group_ids= []
     groups = []
@@ -224,10 +222,15 @@ def group_reconstruct(oldSLMoutputF, date):
                     if group['overall_group_id'] == info['group']:
                         group['overall_group_users'].append(info['id'])
         
+        global total_article
         group_ids.sort()
-
+        users = list(map(int, total_user_list))
+        users.sort()
         group_document = {
             "date":date,
+            "day_range":day_range,
+            "overall_groupArticle_list":list(total_article),
+            "overall_groupUser_list": users,
             "overall_groupID_list":group_ids,
             "overall_group_list":groups
         }
@@ -235,8 +238,8 @@ def group_reconstruct(oldSLMoutputF, date):
     print('groups reconstruction finished')
     return group_document
 
-def updateGroup(fileName, date, db):
-    group_document = group_reconstruct(fileName, date)
+def updateGroup(fileName, date, day_range, db, total_user_list):
+    group_document = group_reconstruct(fileName, date, day_range, total_user_list)
     groupCollection = db['Group']
     groupCollection.insert_one(group_document)
 
@@ -245,7 +248,7 @@ def main(dbPassword, date, day_range = 7, append=False):
 
     s = datetime.datetime.now()
 
-    createFileNameTail(date, append)
+    createFileNameTail(date, day_range)
     
     client=MongoClient(host=HOST,port=PORT,username=USERNAME,password=dbPassword)
     db=client[DBNAME]
@@ -269,23 +272,24 @@ def main(dbPassword, date, day_range = 7, append=False):
     total_user_list = iterateRelation(relationCollection, relationSkip, db, day_range, date)
     mapSLMinput(total_user_list)
 
-    p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar', SLMinputF, SLMoutputF]+SLMargs)
+    p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'/../ModularityOptimizer.jar', SLMinput_mapped, SLMoutputF]+SLMargs)
     returnCode = p.wait()
 
     if returnCode != 0:
         print("SLM process error")
         exit(1)
     else:
-        finalOutput(date, db, total_user_list)
+        finalOutput(date, day_range,db, total_user_list)
 
-    updateGroup(mongoInputF, date, db)
+    updateGroup(mongoInputF, date, day_range, db, total_user_list)
 
     e = datetime.datetime.now()
     print("Finished, spent: ", e-s)
 
 if __name__ == "__main__":
+    # print(os.path.dirname(__file__))
     if len(sys.argv) == 4:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= sys.argv[3])
+        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]))
     elif len(sys.argv) ==5:
         main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]) ,append=True)
     # python .\Relation\outside-relation\overall_relation.py swordtight 2018-09-20 1

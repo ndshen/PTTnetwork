@@ -1,6 +1,9 @@
-{
+ {
     "date":"2018-09-19",
+    "day_range":3,
     "overall_groupID_list":[0,1],
+    "overall_groupUser_list":[],
+    "overall_groupArticle_list":[],
     "overall_group_list":[
         {
             "overall_group_id":0,
