@@ -24,3 +24,34 @@ db.Visualization.update(
     {_id: ObjectId("5ba5def71c704151dc609872")},
     {"$set":{"day_range":3}}
 )
+
+//Analyze group
+"number_of_users":{$size:"$overall_group_list.overall_group_users"}
+
+
+db.Group.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-18",
+            "day_range":7
+        }
+    },
+    {
+        "$project":{
+            "_id": 0,
+            "overall_group_list":1
+        }
+    },
+    {
+        "$unwind": "$overall_group_list"
+    },
+    {
+        "$project":{
+            "group_id":"$overall_group_list.overall_group_id",
+            "group_count":{"$size":"$overall_group_list.overall_group_users"}
+        }
+    },
+    {
+        "$sort":{"group_id":1}
+    }
+])

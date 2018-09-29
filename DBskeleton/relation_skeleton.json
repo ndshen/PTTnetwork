@@ -1,0 +1,15 @@
+{
+    "user1id":0,
+    "user2id":1,
+    "Intersection":2,
+    "Articleid": [
+        {
+            "art_id" : 0,
+            "art_time" : "2018-09-18"
+        },
+        {
+            "art_id": 100,
+            "art_time" : "2018-09-15"
+        }
+    ]
+}

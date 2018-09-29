@@ -221,6 +221,7 @@ def group_reconstruct(oldSLMoutputF, date, day_range,total_user_list):
                 for group in groups:
                     if group['overall_group_id'] == info['group']:
                         group['overall_group_users'].append(info['id'])
+                        break
         
         global total_article
         group_ids.sort()

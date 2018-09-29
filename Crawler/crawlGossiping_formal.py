@@ -307,8 +307,8 @@ def download(articles,res): #download the content, choose what attr will be craw
                         print_log("exceed our timeframe 1 day")
                         stop_crawler = 1
                         return temp
-                        break
-                except :
+                except Exception as e:
+                    print(e)
                     print_log("error", pubdate)
                     continue
                 #print_log(latesttime,pubdate)
@@ -320,7 +320,6 @@ def download(articles,res): #download the content, choose what attr will be craw
                     print_log('exceed our timeframe %s day' % TIME_FRAME)
                     stop_crawler = 1
                     return temp
-                    break
             except Exception as e:
                 print(e)
                 print_log("error", pubdate)
