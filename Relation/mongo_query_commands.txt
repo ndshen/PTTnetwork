@@ -55,3 +55,78 @@ db.Group.aggregate([
         "$sort":{"group_id":1}
     }
 ])
+
+db.Group.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-18",
+            "day_range":3
+        }
+    },
+    {
+        "$project":{
+            "_id":0,
+            "overall_groupArticle_list":1
+        }
+    },
+    {
+        "$unwind":"$overall_groupArticle_list"
+    },
+    {
+        "$lookup":{
+            "from":"Article",
+            "localField":"overall_groupArticle_list",
+            "foreignField":"id",
+            "as":"ArticleName"
+        }
+    },
+    {
+        "$unwind":"$ArticleName"
+    },
+    {
+        "$project":{
+            "time":{"$split":["$ArticleName.Time", " "]},
+            "qty":1
+        }
+    },
+    {
+        "$unwind":"$time"
+    },
+    {
+        "$match":{"time":/^.{2}$/}
+    },
+    {
+        "$group":{
+            "_id":{"time":"$time"},
+            "total_qty":{"$sum":"$qty"}
+        }
+    }
+]).pretty()
+
+db.Group.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-18",
+            "day_range":7
+        }
+    },
+    {
+        "$project":{
+            "countUser":{"$size":"$overall_groupUser_list"}
+        }
+    }
+])
+
+db.Visualization.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-18",
+            "day_range":7
+        }
+    },
+    {
+        "$project":{
+            "countUser":{"$size":"$nodes"}
+        }
+    }
+])
