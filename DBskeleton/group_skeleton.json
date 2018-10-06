@@ -12,10 +12,12 @@
                 {
                     "internal_group_id":1,
                     "internal_group_users": [1,2,3,4]
+                    "internal_group_leaders":[1,2]
                 },
                 {
                     "internal_group_id":2,
                     "internal_group_users": [11,12,13,14]
+                    "internal_group_leaders":[11,12]
                 }
             ]
         },
@@ -26,10 +28,12 @@
                 {
                     "internal_group_id":1,
                     "internal_group_users": [5,6]
+                    "internal_group_leaders":[5,6]
                 },
                 {
                     "internal_group_id":2,
                     "internal_group_users": [7,8]
+                    "internal_group_leaders":[7,8]
                 }
             ]
         }
