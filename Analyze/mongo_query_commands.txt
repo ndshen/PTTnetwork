@@ -195,7 +195,7 @@ db.Visualization.aggregate([
 db.User.aggregate([
     {
         "$match":{
-            "id":1
+            "id":5
         }
     },
     {
@@ -227,6 +227,37 @@ db.User.aggregate([
     {
         "$project":{
             "ip":"$ArticleData.IPaddress"
+        }
+    }
+])
+
+db.Visualization_inner.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-18",
+            "day_range":7,
+            "group_id":5
+        }
+    },
+    {
+        "$project":{
+            "group_id":"$group_id",
+            "links":"$links",
+            "_id":0
+        }
+    },
+    {
+        "$unwind":"$links"
+    },
+    {
+        "$match":{
+            "links.weight":{"$gte":0.5}
+        }
+    },
+    {
+        "$group":{
+            "_id":"group_id",
+            "links":{"$push":"$links"},
         }
     }
 ])
