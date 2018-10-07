@@ -136,7 +136,7 @@ db.finalGroup.aggregate([
         "$match":{
             "date":"2018-09-18",
             "day_range":7,
-            "group_id":0
+            "group_id":5
         }
     },
     {
@@ -188,6 +188,45 @@ db.Visualization.aggregate([
     {
         "$match":{
             "nodes.id":1625
+        }
+    }
+])
+
+db.User.aggregate([
+    {
+        "$match":{
+            "id":1
+        }
+    },
+    {
+        "$project":{
+            "_id":0,
+            "Article":"$Article"
+        }
+    },
+    {
+        "$unwind":"$Article"
+    },
+    {
+        "$sort":{"Article.art_time":-1}
+    },
+    {
+        "$limit":1
+    },
+    {
+        "$lookup":{
+            "from":"Article",
+            "localField":"Article.art_id",
+            "foreignField":"id",
+            "as":"ArticleData"    
+        }
+    },
+    {
+        "$unwind":"$ArticleData"
+    },
+    {
+        "$project":{
+            "ip":"$ArticleData.IPaddress"
         }
     }
 ])
