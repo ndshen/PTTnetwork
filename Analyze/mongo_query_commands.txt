@@ -134,9 +134,9 @@ db.Visualization.aggregate([
 db.finalGroup.aggregate([
     {
         "$match":{
-            "date":"2018-09-18",
+            "date":"2018-09-30",
             "day_range":7,
-            "group_id":5
+            "group_id":4
         }
     },
     {
@@ -172,7 +172,7 @@ db.finalGroup.aggregate([
 db.Visualization.aggregate([
     {
         "$match":{
-            "date":"2018-09-18",
+            "date":"2018-09-30",
             "day_range":7
         }
     },
@@ -258,6 +258,47 @@ db.Visualization_inner.aggregate([
         "$group":{
             "_id":"group_id",
             "links":{"$push":"$links"},
+        }
+    }
+])
+
+db.Group.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-30",
+            "day_range":7
+        }
+    },
+    {
+        "$project":{
+            "_id":0,
+            "group_list":"$overall_group_list"
+        }
+    },
+    {
+        "$unwind":"$group_list"
+    },
+    {
+        "$match":{
+            "group_list.overall_group_id":4
+        }
+    },
+    {
+        "$project":{
+            "internal_groups":"$group_list.internal_group_list"
+        }
+    },
+    {
+        "$unwind":"$internal_groups"
+    },
+    {
+        "$match":{
+            "internal_groups.internal_group_id":0
+        }
+    },
+    {
+        "$project":{
+            "group_leaders":"$internal_groups.internal_group_leaders"
         }
     }
 ])
