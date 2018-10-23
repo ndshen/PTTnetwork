@@ -1,0 +1,12 @@
+{
+	"date":date,
+	"day_range":day_range
+ 	"term":"",
+ 	"articles":[],
+ 	"group":{[
+ 		"id":0,
+ 		"df_group":0, 
+ 	]},
+ 	"tf":
+  "df":
+}
