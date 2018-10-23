@@ -32,8 +32,8 @@ db.Visualization.update(
 db.Group.aggregate([
     {
         "$match":{
-            "date":"2018-09-18",
-            "day_range":7
+            "date":"2018-10-20",
+            "day_range":14
         }
     },
     {
