@@ -61,8 +61,9 @@ def computeRelation(userA, userB, intersection, userCollection, day_range, date)
 def simulationAnalyze(date, day_range, sample_size, relationCollection, userCollection):
     # Randomly select the sample
     relationCollection_size = relationCollection.count()
-    random_range = (relationCollection_size - sample_size)*3/4
+    random_range = int((relationCollection_size - sample_size)*3/4)
     random_jump = random.randint(1, random_range)
+    print("Random jump: {}".format(str(random_jump)))
 
     cursor = relationCollection.find(skip=random_jump, no_cursor_timeout=True, batch_size=30)
     done_relation = 0
