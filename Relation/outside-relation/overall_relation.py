@@ -1,5 +1,5 @@
 import sys, os
-import datetime
+import datetime, time
 from datetime import timedelta
 from pymongo import MongoClient
 import subprocess
@@ -115,8 +115,10 @@ def validUserList(user, day_range, date):
 
 def computeRelation(userA, userB, intersection,db, day_range, date):
     userCollection=db['User']
+    mongo_find_start = time.time()
     A = userCollection.find_one({"id":userA})
     B = userCollection.find_one({"id":userB})
+    # print(time.time() - mongo_find_start)
     if A is None or B is None:
         return(-1)
     else:
@@ -155,7 +157,9 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
             intersectionList = validArticle(doc['Articleid'], date, day_range)
             if len(intersectionList) < minimal_intersection:
                 doneCount += 1
+                print("Done Relation: {}".format(doneCount), end="\r")
                 continue
+            start_relation_time = time.time()
             total_article = total_article.union(set(intersectionList))
             userA=doc['user1id']
             userB=doc['user2id']
@@ -168,6 +172,7 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
                 total_user.add(str(userB))
 
             doneCount += 1
+            # print("End of one Relation", time.time()- start_relation_time)
             print("Done Relation: {}".format(doneCount), end="\r")
             # update_progress(doneCount/cursor.count())
             # print("{}\t{}\t{}".format(userA,userB,relation))
