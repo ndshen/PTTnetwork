@@ -68,7 +68,7 @@ def main(args):
     elif len(args) != 3 and len(args) != 5: 
         print_log("Please enter MongoDB password and pages (and start date and end date) to crawl")
         sys.exit(1)
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.DEBUG,filename="../../tempData/crawler/download/formal_log.txt")#filename="../../tempData/crawler/download/formal_log.txt"
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.DEBUG,filename="../../tempData/crawler/formal_log.txt")#filename="../../tempData/crawler/download/formal_log.txt"
     global password
     #global pagetocrawl
     global idforUser
@@ -251,8 +251,16 @@ def download(articles,res): #download the content, choose what attr will be craw
             print_log("ERROR",e)
         
         soup = BeautifulSoup(res2.text,'html.parser')
-
-        details =  soup.findAll("meta", property="og:description") #main contents 
+        
+        #details =  soup.findAll("meta", property="og:description") #main contents
+        details = '' 
+        raw_content = soup.find("div", {"id": "main-content"})
+        if raw_content == None:
+            continue
+        for attr in raw_content:
+            if attr.__class__.__name__ is  'NavigableString':
+                details += attr
+        
         titletagname = "span.article-meta-value"
         titles=soup.select(titletagname) #title,date and author
         
@@ -316,10 +324,11 @@ def download(articles,res): #download the content, choose what attr will be craw
                 pubdate = datetime.strptime(pubdate_str[3].text, '%a %b %d %H:%M:%S %Y')
                 print(datetime.now().replace(microsecond=0), pubdate)
                 if  datetime.now().replace(microsecond=0) - pubdate > timedelta(days= int(TIME_FRAME)):
-                    print_log(str(latesttime)+'\n'+str(pubdate))
+                    print_log(str(pubdate))
                     print_log('exceed our timeframe %s day' % TIME_FRAME)
                     stop_crawler = 1
                     return temp
+                    break
             except Exception as e:
                 print(e)
                 print_log("error", pubdate)
@@ -369,9 +378,7 @@ def download(articles,res): #download the content, choose what attr will be craw
             
         #content
         content = ''
-        for detail in details: 
-            content = content + detail['content'] + '\n'
-            temp = temp + detail['content'] + '\n'
+        temp = temp + details + '\n'
         # push messages
         for push in pushes:
             temp = temp + push.text+'\n'
@@ -380,7 +387,6 @@ def download(articles,res): #download the content, choose what attr will be craw
         # url
         temp = temp + "文章網址(url):" + url
         temp = temp + '\n' + '\n'
-
         global timesforsuccesssuccess
         print_log("success")
         print_log("Article_name: ", title_value)
@@ -389,7 +395,7 @@ def download(articles,res): #download the content, choose what attr will be craw
         Author = {
                 "Name":"", "id":-1,
                 "Nickname":"", "CorrelatedUser":[],
-                "Article":[], "Message":[""]
+                "Article":[], "Message":[""], 'IPAddress':[]
         }
         lengthforauthor = len(author_value.split(' ',1))
         pri_name = None
@@ -403,6 +409,7 @@ def download(articles,res): #download the content, choose what attr will be craw
         Author['Name'] = pri_name
         Author['id'] = idforUser
         Author['Nickname'] = nickname
+        Author['IPAddress'] = [ipaddress]
         author_id = idforUser
         # check author if in database
         check_new_author = 1
@@ -419,7 +426,7 @@ def download(articles,res): #download the content, choose what attr will be craw
                         "ArticleName": title_value, "id": idforArticle,
                         "Time": time_value, "Author": author_value,
                         "IPaddress": ipaddress, "URL": url,
-                        "Content": content, "Boo": [""], "Push":[""], "Neutral":[""]
+                        "Content": details, "Boo": [""], "Push":[""], "Neutral":[""]
         }
         article_id = idforArticle
         #check article if in database
@@ -432,9 +439,6 @@ def download(articles,res): #download the content, choose what attr will be craw
             insert_article['id'] = article_id
             check_new_aritcle =0
             # for first time crawl, to speed up first time
-            if firsttimeruncode:
-                print_log('skip duplicate article for first time')
-                return None
         print_log("Article id: " + str(article_id) )
         Push_list = []
         Boo_list = []
@@ -443,10 +447,27 @@ def download(articles,res): #download the content, choose what attr will be craw
         for push in pushes:
             try:
                 data = push.text[:-1]
+                data = data.replace('  ',' ')
                 mes_type = data[0]
-                name = data.split(' ')[1][:-1]#data.split(a,b)[0] split for b+1 times
-                mes_time = data.split(' ')[-2] + ' ' +data.split(' ')[-1]
-                content = data.split(' ', 2)[2][:-1*len(mes_time)]
+                temp_data = data.split(' ')
+                name = temp_data[1][:-1]#data.split(a,b)[0] split for b+1 times
+                mes_time = temp_data[-2] + ' ' +temp_data[-1]
+                mix_data = temp_data[-3]
+                data_length = len(mix_data)
+                index = -1
+                rev = mix_data[::-1]
+                for i in range(len(rev)):
+                    if not rev[i].isdigit() and rev[i] != '.':
+                        index = i 
+                        break
+                if index != -1:        
+                    push_ip = mix_data[data_length-index:]
+                else:
+                    push_ip = temp_data[-3]
+                if len(temp_data) > 5:
+                    content = data.split(' ', 2)[2][:-1*(len(mes_time)+len(push_ip)+1)]
+                else:
+                    content = mix_data[:data_length-index]
             except Exception as e:
                 print_log(e)
                 continue
@@ -464,18 +485,20 @@ def download(articles,res): #download the content, choose what attr will be craw
             insert_user = {
                 "Name": name, "id":idforUser,
                 "Nickname":"", "CorrelatedUser":[],
-                "Article":[], "Message":[""]
+                "Article":[], "Message":[""], 'IPAddress':[push_ip]
             }
             insert_message_to_user = {
                 "ArticleName": title_value,
                 'ArticleId': article_id,
                 "React":"", #0 for boo ,1 for push, 2 for neutral
                 "Message": content,
-                'Time': mes_time
+                'IPAddress': push_ip,
+                'Time': mes_time,
             }
             insert_message_to_art = {
                 'Name' : name,
                 'Content': content,
+                'IPAddress': push_ip,
                 'Time': mes_time
             }
             
@@ -517,6 +540,9 @@ def download(articles,res): #download the content, choose what attr will be craw
                     },{
                         '$push': {
                             'Message': insert_message_to_user
+                        },
+                        '$addToSet': {
+                            'IPAddress':push_ip
                         }
                     })
                 else:
@@ -553,7 +579,8 @@ def download(articles,res): #download the content, choose what attr will be craw
             { '$set':{
                 'Boo': insert_article['Boo'], 
                 'Push': insert_article['Push'],
-                'Neutral': insert_article['Neutral']
+                'Neutral': insert_article['Neutral'],
+                'Content': details
                 }
             }
             )
@@ -565,7 +592,7 @@ def download(articles,res): #download the content, choose what attr will be craw
             print('error time format')
             continue
         if check_new_author == 1:
-            save_data = {'art_id': article_id, 'art_time': art_time}
+            save_data = {'art_id': article_id, 'art_time': art_time , 'IPAddress': ipaddress}
             Author['Article'].append(save_data)
             collection.insert(Author)
         else:
@@ -573,7 +600,8 @@ def download(articles,res): #download the content, choose what attr will be craw
                 'id': author_id
                 },{
                     "$addToSet": {
-                        "Article": {'art_id': article_id, 'art_time': art_time}
+                        "Article": {'art_id': article_id, 'art_time': art_time,'IPAddress': ipaddress},
+                        "IPAddress": ipaddress
                     }
                 })
         print_log('Article id :' + str(article_id) + 'finished')

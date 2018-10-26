@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import random
 import datetime
 import numpy as np
@@ -54,14 +55,15 @@ def computeRelation(userA, userB, intersection, userCollection, day_range, date)
         listA_len = validUserList(A, day_range, date)
         listB_len = validUserList(B, day_range, date)
         union= listA_len + listB_len - intersection
-        # if union == 0:
-        #     union = 1
+        if union == 0:
+            print("Union is zero Error, userA: {}, userB: {}".format(userA, userB))
+            union = 1
         return(intersection/union)
 
 def simulationAnalyze(date, day_range, sample_size, relationCollection, userCollection):
     # Randomly select the sample
     relationCollection_size = relationCollection.count()
-    random_range = int((relationCollection_size - sample_size)*3/4)
+    random_range = int((relationCollection_size - sample_size)*1/1000)
     random_jump = random.randint(1, random_range)
     print("Random jump: {}".format(str(random_jump)))
 
@@ -88,11 +90,44 @@ def simulationAnalyze(date, day_range, sample_size, relationCollection, userColl
     
     tmpDict = {"intersection":intersection_list, "relation":relation_list}
     output_df = pd.DataFrame(tmpDict)
-    output_df.to_csv(os.path.join(OUTPUT_DIR, "{}_{}_{}".format(date, day_range, sample_size)))
+    output_df.to_csv(os.path.join(OUTPUT_DIR, "{}_{}_{}_{}.csv".format(date, day_range, sample_size, random_jump)))
+
+# 9/11 - 10/20
+def simulation(relationCollection, userCollection):
+    test_date_list = ["2018-09-25", "2018-09-30", "2018-10-05", "2018-10-10", "2018-10-15", "2018-10-20"]
+    for date in test_date_list:
+        for i in range(1, 15):
+            for j in range(3):
+                print("{} {} {}".format(date, i , j+1))
+                simulationAnalyze(date, i, 500, relationCollection, userCollection)
+
+def concat_sample_file():
+    sample_list = os.listdir(OUTPUT_DIR)
+    file_name_re = re.compile(r"(\d{4}-\d{2}-\d{2})_(\d+)_(\d+)_(\d+).csv")
+    df_list = []
+    for i in range(1, 15):
+        main_df = pd.DataFrame()
+        for sample_file in sample_list:
+            match_object = file_name_re.match(sample_file)
+            if match_object is not None:
+                if i == int(match_object.group(2)):
+                    df = pd.read_csv(os.path.join(OUTPUT_DIR, sample_file), index_col=0)
+                    # print(df)
+                    main_df = main_df.append(df, ignore_index=True)
+        
+        df_list.append(main_df)
+        # main_df.to_csv("{}-day_result.csv".format(str(i)))
+
+    output_file = pd.ExcelWriter('simulateResult.xlsx')
+    for i, df in enumerate(df_list):
+        df.to_excel(output_file, str(i+1))
+    output_file.save()
+
+
 
 if __name__ == "__main__":
 
-    HOST='140.112.107.203'
+    HOST='127.0.0.1'
     PORT=27020
     USERNAME='rootNinja'
     DBNAME='CrawlGossiping_formal'
@@ -103,4 +138,5 @@ if __name__ == "__main__":
     relationCollection= db["Relation"]
     userCollection = db["User"]
 
-    simulationAnalyze("2018-09-20", 1, 100, relationCollection, userCollection)
+    # simulation(relationCollection, userCollection)
+    concat_sample_file()

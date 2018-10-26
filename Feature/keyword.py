@@ -14,10 +14,10 @@ from pymongo import MongoClient
 import jieba
 import jieba.posseg as pseg
 import sys
-client = MongoClient(host="140.112.107.203",port=27020,username="rootNinja",password="swordtight")
+client = MongoClient(host="127.0.0.1",port=27020,username="rootNinja",password="swordtight")
 db=client.CrawlGossiping_formal
 
-date = "2018-10-07"
+date = "2018-10-21"
 day_range = 7
 def stopwordslist(filepath):  
     stopwords = [line.strip() for line in open(filepath, 'r', encoding='utf-8').readlines()]  

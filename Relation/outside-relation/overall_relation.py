@@ -25,7 +25,8 @@ visualoutputF=data_file_dir+'community'
 mongoInputF=data_file_dir+"group"
 
 # relation below gate will be ignored and will not be print in the output
-GATE=0
+GATE=0.01
+INTER_GATE = 15.
 
 HOST='127.0.0.1'
 PORT=27020
@@ -57,8 +58,8 @@ def update_progress(progress):
 def createFileNameTail(date, day_range):
     global SLMinputF, SLMinput_mapped, visualinputF,SLMoutputF,visualoutputF, mongoInputF
 
-    name_tail="_"+date+"_"+str(day_range)+".txt"
-    name_tail_json="_"+date+"_"+str(day_range)+".json"
+    name_tail="_"+date+"_"+str(day_range)+"_"+str(INTER_GATE)+".txt"
+    name_tail_json="_"+date+"_"+str(day_range)+"_"+str(INTER_GATE)+".json"
 
     SLMinputF=SLMinputF+name_tail
     SLMinput_mapped=SLMinput_mapped+name_tail
@@ -115,7 +116,7 @@ def validUserList(user, day_range, date):
 
 def computeRelation(userA, userB, intersection,db, day_range, date):
     userCollection=db['User']
-    mongo_find_start = time.time()
+    # mongo_find_start = time.time()
     A = userCollection.find_one({"id":userA})
     B = userCollection.find_one({"id":userB})
     # print(time.time() - mongo_find_start)
@@ -134,11 +135,11 @@ def computeRelation(userA, userB, intersection,db, day_range, date):
 def iterateRelation(relationCollection, relationSkip, db, day_range, date):
     # relationCount = relationCollection.count()
     total_user = set()
-
-    if day_range <= 4:
-        minimal_intersection = 5
-    else:
-        minimal_intersection = 10
+    minimal_intersection = INTER_GATE
+    # if day_range <= 4:
+    #     minimal_intersection = 5
+    # else:
+    #     minimal_intersection = 10
 
     valid_date_range = []
     for i in range(day_range):
@@ -159,7 +160,7 @@ def iterateRelation(relationCollection, relationSkip, db, day_range, date):
                 doneCount += 1
                 print("Done Relation: {}".format(doneCount), end="\r")
                 continue
-            start_relation_time = time.time()
+            # start_relation_time = time.time()
             total_article = total_article.union(set(intersectionList))
             userA=doc['user1id']
             userB=doc['user2id']
@@ -235,6 +236,8 @@ def group_reconstruct(oldSLMoutputF, date, day_range,total_user_list):
         group_document = {
             "date":date,
             "day_range":day_range,
+            "relation_gate":GATE,
+            "inter_gate":INTER_GATE,
             "overall_groupArticle_list":list(total_article),
             "overall_groupUser_list": users,
             "overall_groupID_list":group_ids,
