@@ -104,3 +104,4 @@ if __name__ == "__main__":
     userCollection = db["User"]
 
     simulationAnalyze("2018-09-20", 1, 100, relationCollection, userCollection)
+    # 1857 1873
