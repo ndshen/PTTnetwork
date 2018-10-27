@@ -26,6 +26,7 @@ for group in Group["overall_group_list"]:
 			})
 		for user_id in group["overall_group_users"]: #for all users in that group
 			user = db.User.find_one({"id":user_id})
+			exist_article = []
 			for article in user["Message"]:
 				if article != "" and "ArticleId" in article:
 					if article["ArticleId"] in overall_groupArticle_list:
@@ -34,9 +35,12 @@ for group in Group["overall_group_list"]:
 						if article["ArticleId"] not in articles_id:
 							articles_id.append(article["ArticleId"])
 							articles_count.append(1)
+							exist_article.append(article["ArticleId"])
 						else: #article already in list
-							index = articles_id.index(article["ArticleId"])
-							articles_count[index] += 1
+							if article["ArticleId"] not in exist_article:
+								index = articles_id.index(article["ArticleId"])
+								articles_count[index] += 1
+								exist_article.append(article["ArticleId"])
 			for article in user["Article"]:
 
 				if article != "":
@@ -46,12 +50,15 @@ for group in Group["overall_group_list"]:
 						if article["art_id"] not in articles_id:
 							articles_id.append(article["art_id"])
 							articles_count.append(1)
+							exist_article.append(article["art_id"])
 						else: #article already in list
-							index = articles_id.index(article["art_id"])
-							articles_count[index] += 1
+							if article["art_id"] not in exist_article:
+								index = articles_id.index(article["art_id"])
+								articles_count[index] += 1
+								exist_article.append(article["art_id"])
 		articles_dict = {"id":articles_id,"count":articles_count}
 		articles_df = pd.DataFrame(articles_dict)
-		articles_df = articles_df.sort_values(by=['count'])
+		articles_df = articles_df.sort_values(by=['count'], ascending=False)
 		articles_df = articles_df.reset_index(drop=True)
 			
 		thirtypercent = int(len(overall_groupArticle_list)*0.33333)
