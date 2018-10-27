@@ -10,20 +10,27 @@ from pymongo import MongoClient
 
 def analyzeUser(User):
     main_frame = pd.DataFrame()
+    done = 0
     for doc in User.find():
         correlaatedUser_count = len(doc["CorrelatedUser"])
-        IP_count = len(doc["IPAddress"])
+        if "IPAddress" in doc:
+            IP_count = len(doc["IPAddress"])
+        else:
+            IP_count = 1
+
         article_count = len(doc["Article"])
         message_count = len(doc["Message"])
         
         temp_dict = {
-            "message":message_count,
-            "article":article_count,
-            "cor_user":correlaatedUser_count,
-            "ip":IP_count
+            "message":[message_count],
+            "article":[article_count],
+            "cor_user":[correlaatedUser_count],
+            "ip":[IP_count]
         }
         temp_frame = pd.DataFrame(temp_dict)
         main_frame = main_frame.append(temp_frame, ignore_index=True)
+        done += 1
+        print("Counted User: {}".format(done), end='\r')
 
     return(main_frame)
 
