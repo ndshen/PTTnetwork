@@ -32,8 +32,8 @@ db.Visualization.update(
 db.Group.aggregate([
     {
         "$match":{
-            "date":"2018-10-20",
-            "day_range":14
+            "date":"2018-10-21",
+            "day_range":7
         }
     },
     {
@@ -134,9 +134,9 @@ db.Visualization.aggregate([
 db.finalGroup.aggregate([
     {
         "$match":{
-            "date":"2018-09-30",
+            "date":"2018-10-14",
             "day_range":7,
-            "group_id":4
+            "group_id":2
         }
     },
     {
@@ -299,6 +299,21 @@ db.Group.aggregate([
     {
         "$project":{
             "group_leaders":"$internal_groups.internal_group_leaders"
+        }
+    }
+])
+
+db.User.aggregate([
+    {
+        "$project":{
+            "user_id": "$id",
+            "message_count": {"$size":"$Message"}
+        }
+    },
+    {
+        "$group":{
+            "_id":null,
+            "avg_msg":{"$avg":"$message_count"}
         }
     }
 ])
