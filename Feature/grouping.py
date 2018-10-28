@@ -6,19 +6,22 @@ db=client.CrawlGossiping_formal
 
 date = "2018-10-21"
 day_range = 7
-Group = db.Group.find_one({"date":date,"day_range":day_range})
+official = 
+inter_gate = 
+Group = db.Group.find_one({"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate})
 overall_groupArticle_list = Group["overall_groupArticle_list"]
 for group in Group["overall_group_list"]:
 	articles_id = []
 	articles_count = []
-	if db.finalGroup.find_one({"group_id":group["overall_group_id"],"date":date,"day_range":day_range}) == None:
+	if db.finalGroup.find_one({"group_id":group["overall_group_id"],"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate}) == None:
 		print("group",group["overall_group_id"])
-		if len(group["overall_group_users"]) > 60: # the usercount of group 
+		if len(group["overall_group_users"]) > 15: # the usercount of group 
 			print("usercount",len(group["overall_group_users"]))
 			db.finalGroup.insert({
 				"group_id":group["overall_group_id"],
 				"date":date,
 				"day_range":day_range,
+				"official":official,"inter_gate":inter_gate,
 				"usercount":len(group["overall_group_users"]),
 				"articles":[],
 				"top30_len":0,
@@ -61,13 +64,13 @@ for group in Group["overall_group_list"]:
 		articles_df = articles_df.sort_values(by=['count'], ascending=False)
 		articles_df = articles_df.reset_index(drop=True)
 			
-		thirtypercent = int(len(overall_groupArticle_list)*0.33333)
+		thirtypercent = int(len(articles_id)*0.33333)
 		if thirtypercent < 1:
 			thirtypercent=1
 		top30 = articles_df.loc[0:thirtypercent]["id"].tolist()
 		print("30 percent inprogress",thirtypercent)
 		db.finalGroup.update(
-			{"group_id":group["overall_group_id"],"date":date,"day_range":day_range},
+			{"group_id":group["overall_group_id"],"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate},
 			{
 				"$set":{
 					"top30_len":thirtypercent,
