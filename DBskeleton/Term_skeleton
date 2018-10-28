@@ -1,0 +1,14 @@
+{
+ 	"date":date,
+ 	"day_range":day_range,
+  "official":1,
+  "inter_gate":15,
+ 	"term":"台灣",
+ 	"articles":[],
+ 	"group":{[
+ 		"id":0,
+ 		"df_group":0, 
+ 	]},
+ 	"tf":0
+  "df":0
+}

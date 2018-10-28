@@ -3,6 +3,7 @@
     "day_range":3,
     "relation_gate":0.01,
     "inter_gate":10,
+    "official":1,
     "overall_groupID_list":[0,1],
     "overall_groupUser_list":[],
     "overall_groupArticle_list":[],

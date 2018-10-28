@@ -57,7 +57,7 @@ def findUserGroup(name, date, day_range):
     ]
 
     for result in visualCollection.aggregate(pipeline):
-        # print(result["nodes"])
+        print(result["nodes"])
         if result["nodes"]["group"] not in group_user_dict:
             group_user_dict[result["nodes"]["group"]] = 1
         else:
@@ -79,8 +79,8 @@ def analyze_article_group(date, day_range):
     
     for name in name_list:
         # print(name)
-        # if name not in user_name_set:
-        if True:
+        if name not in user_name_set:
+        # if True:
             findUserGroup(name, date, day_range)
             user_name_set.add(name)
         # print(name)

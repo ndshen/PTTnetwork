@@ -32,8 +32,9 @@ db.Visualization.update(
 db.Group.aggregate([
     {
         "$match":{
-            "date":"2018-10-21",
-            "day_range":7
+            "date":"2018-10-07",
+            "day_range":7,
+            "inter_gate":20
         }
     },
     {
@@ -136,7 +137,7 @@ db.finalGroup.aggregate([
         "$match":{
             "date":"2018-10-14",
             "day_range":7,
-            "group_id":2
+            "group_id":5
         }
     },
     {
@@ -317,3 +318,19 @@ db.User.aggregate([
         }
     }
 ])
+
+db.Group.update({official:{$exists:false}},{$set:{
+    "official":1
+}}, false, true)
+
+db.Group.update({inter_gate:{$exists:false}},{$set:{
+    "inter_gate":10
+}}, false, true)
+
+db.Visualization.update({_id:ObjectId("5bd0089b1c704149f8f3c225")},{$set:{
+    "inter_gate":20
+}}, false)
+
+db.Group.update(date:"2018-09-19", day_range:1},{$set:{
+    "official":0
+}}, false)
