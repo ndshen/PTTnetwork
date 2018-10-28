@@ -26,7 +26,9 @@ mongoInputF=data_file_dir+"group"
 
 # relation below gate will be ignored and will not be print in the output
 GATE=0.01
-INTER_GATE = 15.
+INTER_GATE = 15
+
+OFFICIAL = 0
 
 HOST='127.0.0.1'
 PORT=27020
@@ -202,7 +204,7 @@ def finalOutput(date, day_range, db, total_user_list):
             idCount+=1
         nodeStr=nodeStr[:-1]
 
-        finalStr="{\"date\":\""+date+"\",\"day_range\":"+str(day_range)+",\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
+        finalStr="{\"date\":\""+date+"\",\"day_range\":"+str(day_range)+",\"inter_gate\":"+str(INTER_GATE)+",\"nodes\": [" +nodeStr+ "],\"links\": [" +f2.read()[:-2]+ "]}"
         nodeJson = "["+nodeStr+ "]"
         parsed = json.loads(finalStr)
         parsed_mongo = json.loads(nodeJson)
@@ -238,6 +240,7 @@ def group_reconstruct(oldSLMoutputF, date, day_range,total_user_list):
             "day_range":day_range,
             "relation_gate":GATE,
             "inter_gate":INTER_GATE,
+            "official":OFFICIAL,
             "overall_groupArticle_list":list(total_article),
             "overall_groupUser_list": users,
             "overall_groupID_list":group_ids,
