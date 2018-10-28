@@ -1,0 +1,16 @@
+{
+ 	"group_id":-1,
+ 	"date":"",
+ 	"day_range":,
+ 	"usercount":0, 
+ 	"userId":-1,
+ 	"articles":[{
+ 	  "_id":0,
+    "count":0}],
+ 	"top30_len":0,
+ 	"top30":[],
+ 	“result”:[{
+ 		"keyword":"",
+ 		“EMI”:0,
+ 		“chisq”:0}]
+}
