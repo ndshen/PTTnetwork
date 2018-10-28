@@ -1,0 +1,18 @@
+{
+ 	"group_id":-1,
+ 	"date":"2018-09-30",
+ 	"day_range":1,
+  "official":0,
+  "inter_gate":15
+ 	"usercount":0, 
+ 	"userId":-1,
+ 	"articles":[{
+ 	  "_id":0,
+    "count":0}],
+ 	"top30_len":0,
+ 	"top30":[],
+ 	“result”:[{
+ 		"keyword":"",
+ 		“EMI”:0,
+ 		“chisq”:0}]
+}
