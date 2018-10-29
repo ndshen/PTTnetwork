@@ -1,3 +1,4 @@
+#calculate df chisq and EMI
 from pymongo import MongoClient
 import jieba
 import math
@@ -5,10 +6,10 @@ import sys
 client = MongoClient(host="140.112.107.203",port=27020,username="rootNinja",password="swordtight")
 db=client.CrawlGossiping_formal
 
-date = "2018-10-07"
-day_range = 7
-official = 0
-inter_gate = 15
+date = sys.argv[1]
+day_range = int(sys.argv[2])
+official = int(sys.argv[3])
+inter_gate = int(sys.argv[4])
 N=0
 top30_len_dic = []
 for groups in db.finalGroup.find({"date":date,"day_range":day_range,"inter_gate":inter_gate}):
