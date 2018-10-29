@@ -1,8 +1,8 @@
 {
  	"date":date,
  	"day_range":day_range,
-  "official":1,
-  "inter_gate":15,
+  	"official":1,
+  	"inter_gate":15,
  	"term":"台灣",
  	"articles":[],
  	"group":{[
@@ -10,5 +10,5 @@
  		"df_group":0, 
  	]},
  	"tf":0
-  "df":0
+  	"df":0
 }

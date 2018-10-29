@@ -29,33 +29,10 @@ db.Visualization.update(
 "number_of_users":{$size:"$overall_group_list.overall_group_users"}
 
 
-db.Group.aggregate([
-    {
-        "$match":{
-            "date":"2018-10-07",
-            "day_range":7,
-            "inter_gate":20
-        }
-    },
-    {
-        "$project":{
-            "_id": 0,
-            "overall_group_list":1
-        }
-    },
-    {
-        "$unwind": "$overall_group_list"
-    },
-    {
-        "$project":{
-            "group_id":"$overall_group_list.overall_group_id",
-            "group_count":{"$size":"$overall_group_list.overall_group_users"}
-        }
-    },
-    {
-        "$sort":{"group_id":1}
-    }
-])
+
+
+
+
 
 db.Group.aggregate([
     {
@@ -107,8 +84,9 @@ db.Group.aggregate([
 db.Group.aggregate([
     {
         "$match":{
-            "date":"2018-09-18",
-            "day_range":7
+            "date":"2018-10-14",
+            "day_range":7,
+            "inter_gate":15
         }
     },
     {
@@ -331,6 +309,11 @@ db.Visualization.update({_id:ObjectId("5bd0089b1c704149f8f3c225")},{$set:{
     "inter_gate":20
 }}, false)
 
-db.Group.update(date:"2018-09-19", day_range:1},{$set:{
+db.Group.update({date:"2018-09-19", day_range:1},{$set:{
     "official":0
 }}, false)
+
+
+db.Collection.update({},{$set:{
+    "official":1
+}}, false, true)

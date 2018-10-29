@@ -1,2 +1,27 @@
-       "Name" : "mmm851010",
-        "id" : 1625,
+db.Group.aggregate([
+    {
+        "$match":{
+            "date":"2018-09-30",
+            "day_range":7,
+            "inter_gate":10
+        }
+    },
+    {
+        "$project":{
+            "_id": 0,
+            "overall_group_list":1
+        }
+    },
+    {
+        "$unwind": "$overall_group_list"
+    },
+    {
+        "$project":{
+            "group_id":"$overall_group_list.overall_group_id",
+            "group_count":{"$size":"$overall_group_list.overall_group_users"}
+        }
+    },
+    {
+        "$sort":{"group_id":1}
+    }
+])
