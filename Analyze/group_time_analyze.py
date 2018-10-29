@@ -18,7 +18,8 @@ def printUsers(date, day_range, group):
         {
             "$match":{
                 "date":date,
-                "day_range":day_range
+                "day_range":day_range,
+                "inter_gate":15
             }
         },
         {
@@ -46,11 +47,12 @@ def printUsers(date, day_range, group):
     return(set(userList))
 
 if __name__ == "__main__":
-    a = printUsers("2018-09-18", 7, 5)
-    b = printUsers("2018-09-30", 7, 5)
+    # a = printUsers("2018-09-18", 7, 5)
+    # b = printUsers("2018-09-30", 7, 5)
+    e = printUsers("2018-10-07", 7, 1)
     c = printUsers("2018-10-14", 7, 5)
     d = printUsers("2018-10-21", 7, 3)
-    print(len(c))
+    print(len(e))
     print(len(d))
     print(len(c.intersection(d)))
     # print(b)

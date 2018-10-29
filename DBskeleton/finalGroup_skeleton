@@ -2,8 +2,8 @@
  	"group_id":-1,
  	"date":"2018-09-30",
  	"day_range":1,
-  "official":0,
-  "inter_gate":15
+  	"official":0,
+  	"inter_gate":15,
  	"usercount":0, 
  	"userId":-1,
  	"articles":[{
