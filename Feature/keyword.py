@@ -17,10 +17,11 @@ import sys
 client = MongoClient(host="127.0.0.1",port=27020,username="rootNinja",password="swordtight")
 db=client.CrawlGossiping_formal
 
-date = "2018-10-21"
-day_range = 7
-official = 
-inter_gate = 
+date = sys.argv[1]
+day_range = int(sys.argv[2])
+official = int(sys.argv[3])
+inter_gate = int(sys.argv[4])
+
 def stopwordslist(filepath):  
     stopwords = [line.strip() for line in open(filepath, 'r', encoding='utf-8').readlines()]  
     return stopwords
@@ -49,7 +50,7 @@ for group in db.finalGroup.find({"date":date,"day_range":day_range,"official":of
 							#if it's the first time the word appears in this article 
 							
 							#if the word has appeared in this group already
-							if db.Term.find_one({"term":word,"group.id":group["group_id"],"date":date,"day_range":day_range,"official":official,"inner_gate":inner_gate}) != None: 
+							if db.Term.find_one({"term":word,"group.id":group["group_id"],"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate}) != None: 
 								print(word,"appeared in",group["group_id"])
 								if word in article_exist[group["group_id"]]:
 									#tf+1

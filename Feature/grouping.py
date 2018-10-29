@@ -4,16 +4,19 @@ from pymongo import MongoClient
 client = MongoClient(host="140.112.107.203",port=27020,username="rootNinja",password="swordtight")
 db=client.CrawlGossiping_formal
 
-date = "2018-10-21"
-day_range = 7
-official = 
-inter_gate = 
-Group = db.Group.find_one({"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate})
+date = sys.argv[1]
+day_range = int(sys.argv[2])
+official = int(sys.argv[3])
+inter_gate = int(sys.argv[4])
+
+print(date, day_range, official, inter_gate)
+Group = db.Group.find_one({"date":date,"day_range":day_range,"inter_gate":inter_gate})
+print(Group)
 overall_groupArticle_list = Group["overall_groupArticle_list"]
 for group in Group["overall_group_list"]:
 	articles_id = []
 	articles_count = []
-	if db.finalGroup.find_one({"group_id":group["overall_group_id"],"date":date,"day_range":day_range,"official":official,"inter_gate":inter_gate}) == None:
+	if db.finalGroup.find_one({"group_id":group["overall_group_id"],"date":date,"day_range":day_range,"inter_gate":inter_gate}) == None:
 		print("group",group["overall_group_id"])
 		if len(group["overall_group_users"]) > 15: # the usercount of group 
 			print("usercount",len(group["overall_group_users"]))
@@ -21,7 +24,8 @@ for group in Group["overall_group_list"]:
 				"group_id":group["overall_group_id"],
 				"date":date,
 				"day_range":day_range,
-				"official":official,"inter_gate":inter_gate,
+				"official":official,
+				"inter_gate":inter_gate,
 				"usercount":len(group["overall_group_users"]),
 				"articles":[],
 				"top30_len":0,
