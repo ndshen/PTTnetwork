@@ -49,8 +49,7 @@ for word in db.Term.find({"date":date,"day_range":day_range,"inter_gate":inter_g
 				weight += N11/df_total
 			if N11/df_total < 0.1:
 				weight = 1.34-N11/df_total
-			else:
-				weight = 1.34+N11/df_total
+			
 
 			EMI = (N11/N)*math.log2((N*N11)/((N11+N10)*(N01+N11)))*weight
 			EMI = EMI +(N01/N)*math.log2((N*N01)/((N01+N00)*(N01+N11)))

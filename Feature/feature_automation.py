@@ -22,4 +22,4 @@ def launch(date,day_range, official, inter_gate):
         exit(1)
 
 if __name__ == "__main__":
-    launch("2018-09-30", 7, 0, 15)
+    launch("2018-10-14", 7, 0, 10)
