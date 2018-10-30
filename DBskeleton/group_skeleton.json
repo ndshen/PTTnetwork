@@ -15,7 +15,8 @@
                 {
                     "internal_group_id":1,
                     "internal_group_users": [1,2,3,4],
-                    "internal_group_leaders":[1,2]
+                    "internal_group_leaders":[1,2],
+                    "internal_top_articles": {"push":[1,42,42],"boo":[1,11,111,]}
                 },
                 {
                     "internal_group_id":2,
