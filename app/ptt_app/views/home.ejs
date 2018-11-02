@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home_Demo</title>
+    <link rel="stylesheet" href="../assets/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../assets/style.css" type="text/css">
+    <script src="../assets/jquery.min.js"></script>
+    <script src="../assets/jquery.easing.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="../assets/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body id="page-top" >
+    <nav class="navbar navbar-expand-sm fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">IMNINJA</a>
+            <div class="" id="myNavbar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link js-scroll-trigger none-collapse" href="#about"><span class="nav-arrow">>&nbsp;</span>About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger light-collapse" href="<%= demo_link %>"><span class="nav-arrow">>&nbsp;</span>Demo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger none-collapse" href="#projects"><span class="nav-arrow">>&nbsp;</span>Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link js-scroll-trigger none-collapse" href="#members"><span class="nav-arrow">>&nbsp;</span>Members</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header style="background-color:rgb(32, 32, 32) !important;height:800px;">
+        <!-- <br /><br /><br /> -->
+        <div class="home-header container">
+            <img src="data/ninja_running2.png" alt="" class="moveToLeft ninja_run">
+            <img src="data/ninja_running.png" alt="" class="moveToRight ninja_run">
+            <img src="data/ninja_middle.png" alt="" class="center ninja_run fadeIn" style="animation-delay: 1.2s; margin: auto;">
+            <div style="margin: 7% 10%;" class="text-center fadeIn ninja_run">
+                <p style="color: white;">
+                    <span class="fadeIn ninja_run" style="animation-delay: 1.5s;">IM Ninjas are gathered together since Feb. 2017. <br></span>
+                    <span class="fadeIn ninja_run" style="animation-delay: 1.7s;">Our destiny is to protect the world and to maintain <br></span>
+                    <span class="fadeIn ninja_run" style="animation-delay: 1.9s;">world peace. As Ninjas, we're about to find out who's <br></span>
+                    <span class="fadeIn ninja_run" style="animation-delay: 2.1s;">hinding behind the internet and see if the world is working in order.</span>
+                </p>
+                <br>
+                <a class="js-scroll-trigger fadeIn ninja_run" href="#about" style="color: rgb(249, 193, 0);animation-delay: 2.5s;">Scroll to check it out</a>
+            </div>
+        </div>
+    </header>
+    <section id="about" class="content">
+        <div class="container">
+            <div class="row">
+                <!-- Featured Project Row -->
+                <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+                    <div class="col-xl-7 col-lg-6">
+                        <img src="data/ptt_page.png" alt="" style="width: inherit;margin-top:5%;">
+                    </div>
+                    <div class="col-xl-4 col-lg-5" style="width: inherit;margin: 3%;">
+                        <div class="featured-text text-center text-lg-left">
+                        <h4 class="text-center" style="margin-top: 8%;">研究動機</h4>
+                        <p class="text-black-50 mb-0">如今，社群媒體已經是許多人日常生活中不可或缺的一部分並逐漸成為新世代中人們傳遞及接收資訊的主要管道，更對於使用者的想法形成以及思維模式產生不容輕視的影響力。然而，人們關注的議題以及對於時事的想法等資訊，往往是以零散的、片段式的方式存在於社群媒體上，以致於試圖找出想法相似的群體變得十分困難。IMNINJA能夠針對PTT上的使用者進行分析，藉由使用者彼此之間在文章中的互動關係進行分群，並將不同使用者群體所關注的議題以關鍵字的方式呈現。如此一來，便能夠將原本離散的使用者之間的關係，以視覺化的方式展示出使用者之間的關係網路。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="content">
+        <div class="container">
+            <div class="row">
+                <!-- Featured Project Row -->
+                <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+                    <div class="col-xl-7 col-lg-7">
+                            <img src="data/clustering_2.jpg" alt="" style="height:50%;width: 90%;margin-top:5%;margin-left: auto;margin-right: auto;display: block;">
+                        </div>  
+                    <div class="col-xl-5 col-lg-5">
+                        <div class="featured-text text-center text-lg-left" style="width: inherit;">
+                        <h4>系統介紹一:<br>&nbsp將使用者依據互動關係分群</h4>
+                        <p class="text-black-50 mb-0">IMNINJA使用Jaccard相似度的概念來定義任兩位PTT使用者的關聯性，並依此將使用者分為若干個大群體。進一步再根據第一步分群完的結果，依照使用者的意見傾向，將大群體內的使用者再分為數個小群體。如此一來，便能將零散的PTT使用者資訊整合成依照使用者之間互動關係所形成的關係網路圖。</p>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <!-- Featured Project Row -->
+                <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+                    <div class="col-xl-7 col-lg-7">
+                        <img src="data/timeline.png" alt="" style="height:50%;width: 90%;margin-top:5%;margin-left: auto;margin-right: auto;display: block;">
+                    </div>   
+                    <div class="col-xl-5 col-lg-5">
+                        <div class="featured-text text-center text-lg-left" style="width: inherit;">
+                        <h4>系統介紹二：<br><span class="text-lg-right">觀察特定議題於時間尺度內的變化</span></h4>
+                        <p class="text-black-50 mb-0">現今社群媒體由於更新相當方便，新的文章累積速度相當快，社群所關注的議題也往往變化的相當快速。IMNINJA的系統使用者可選取以三天或七天為單位，關注在指定的該段時間內PTT用戶之分群結果。藉由此功能，系統使用者能夠獲得較過往僅擷取關鍵字的做法更豐富的資訊，除了可以觀察一個特定議題隨時間變化的討論熱度是否有變化，更可以查看PTT上使用者對於該議題立場的變化為何。</p>
+                        </div>
+                    </div>
+                                
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <!-- Featured Project Row -->
+                <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+                    <div class="col-xl-7 col-lg-7">
+                            <img src="data/spy.jpg" alt="" style="height:50%;width: 90%;margin-top:5%;margin-left: auto;margin-right: auto;display: block;">
+                        </div>     
+                    <div class="col-xl-5 col-lg-5">
+                        <div class="featured-text text-center text-lg-left">
+                        <h4>系統介紹三：<br>&nbsp瀏覽特定使用者的行為</h4>
+                        <p class="text-black-50 mb-0">IMNINJA的系統使用者可以選定關係網路圖中其中一個群體，並檢視群體中任一使用者，瀏覽該用戶於給定的時間尺度內所發布的文章以及推跟噓的文章列表。藉由本功能，可以使得系統的使用者更加了解PTT上使用者的行為，並能據此識別出可疑的網軍帳號，在對其作後續的追蹤。</p>
+                        <br><br>
+                        <h5 class="text-center"><a href="<%= demo_link %>">Demo Link</a></h5>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="members" class="content" >
+        <div class="container row" style="margin-top:3%;">
+            <div class="col-xl-2 text-center">
+                <img src="data/member1.png" alt="" >
+                <p class="text-center">Jessica Chen</p>
+            </div>
+            <div class="col-xl-2 text-center">
+                <img src="data/member2.png" alt="" >
+                <p class="text-center">Peter Lo</p>
+            </div>
+            <div class="col-xl-2 text-center">
+                <img src="data/member3.png" alt="" >
+                <p class="text-center">Kay Lin</p>
+            </div>
+            <div class="col-xl-2 text-center">
+                <img src="data/member4.png" alt="">
+                <p class="text-center">Andy Shen</p>
+            </div>
+            <div class="col-xl-2 text-center">
+                <img src="data/member5.png" alt="">
+                <p class="text-center">Ken Chou</p>
+            </div>
+            <div class="col-xl-2 text-center">
+                <img src="data/member6.png" alt="" >
+                <p class="text-center">Allan Tsai</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="members" class="content">
+        <div class="container row">
+            <div class="col-xl-2 text-center" id="prof_icon_animate">
+                <img src="data/prof_icon1.png" alt="">
+                <p class="text-center">Prof. X</p>
+            </div>
+            <div class="col-xl-4" id="prof_words">
+                <br>
+                <p style="color: rgb(249, 193, 0);">&nbsp&nbsp&nbsp&nbspIMNINJA Special Thanks </p>
+                <p style="color: rgb(249, 193, 0);">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-- Prof. X</p>
+            </div>
+            <div class="col-xl-2 text-center" id="ninja_icon_animate">
+                <img src="data/ninja_icon1.png" alt="">
+                <p class="text-center">IM NINJA</p>
+            </div>
+            <div class="col-xl-4" id="ninja_contact">
+                <br>
+                <p style="color: rgb(249, 193, 0);">&nbsp&nbsp&nbsp&nbspContact Us</p>
+                <p >&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <a href="mailto:kay61515@gmail.com" style="color: white;">Give us some feedback</a></p>
+            </div>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function() {
+            $('body').css('display', 'none');
+            $('body').fadeIn(1000);
+            $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
+                if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                var target = $(this.hash);
+                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                if (target.length) {
+                    $('html, body').animate({
+                    scrollTop: (target.offset().top - 70)
+                    }, 1000, "easeInOutExpo");
+                    return false;
+                }
+                }
+            });
+            var navbarCollapse = function() {
+                if ($("#mainNav").offset().top > 100) {
+                    $("#mainNav").addClass("navbar-shrink");
+                } else {
+                    $("#mainNav").removeClass("navbar-shrink");
+                }
+            };
+            
+            $(window).scroll(function(){
+                navbarCollapse();
+                var top_of_element = $("#members").offset().top;
+                var bottom_of_element = $("#members").offset().top + $("#members").outerHeight();
+                var bottom_of_screen = $(window).scrollTop() + window.innerHeight;
+                var top_of_screen = $(window).scrollTop();
+                if((bottom_of_screen > top_of_element) && (top_of_screen < bottom_of_element)){
+                    $('#prof_words').addClass(" fadeInRight animated_words");
+                    $('#prof_icon_animate').addClass("fadeIn prof_icon");
+                    $('#ninja_icon_animate').addClass(" prof_icon fadeIn delay2sec");
+                    $('#ninja_contact').addClass(" fadeInRight animated_words delay2sec");
+                }
+                else{
+                    $('#prof_words').removeClass(" fadeInRight animated_words");
+                    $('#prof_icon_animate').removeClass("fadeIn prof_icon");
+                    $('#ninja_icon_animate').removeClass(" prof_icon fadeIn delay2sec");
+                    $('#ninja_contact').removeClass(" fadeInRight animated_words delay2sec");
+                }
+            });
+        });
+        var selected_date = getCookie('day_select');document.cookie = "day_select=";
+        var selected_range = getCookie('day_range');document.cookie = "day_range=";
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../assets/style.css" type="text/css">
+    <link rel="stylesheet" href="../assets/d3-graph.css" type="text/css">
+    <script src="../assets/d3.v4.min.js"></script>
+    <script src="../assets/jquery.min.js"></script>
+    <link rel="stylesheet" href="../assets/bootstrap.min.css" type="text/css">
+    <title>Group_Demo</title>
+</head>
+<body style="background-color: black; width: 1200px;">
+    <nav class="navbar navbar-expand-sm fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="<%= home_link %>" style="font-size:35px;">IMNINJA</a>
+        </div>
+    </nav>
+    <br><br><br>
+    <a href="<%= demo_link %>" class="previous" style="margin-left:7%; font-size: 20px; text-decoration: none; padding: 8px 16px;">⇦ Go Back</a>
+    <br><br>
+    <script>
+    
+    var width = 800,
+        height = 550;
+
+    var margin = {
+        top: 0,
+        bottom: 30,
+        left: 10,
+        right: 10,
+    }
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append('g')
+        .attr('transform', 'translate(' + margin.top + ',' + margin.left + ')');
+
+    width = width - margin.left - margin.right;
+    height = height - margin.top - margin.bottom;
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    // change the strength here
+    var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.id; }))
+        .force("charge", d3.forceManyBody().strength(-3))
+        .force("center", d3.forceCenter((width / 2), (height / 2 -20)));
+
+    var legend_height = 130;
+
+    // #region of legend design
+    var legend_descript = svg.append('g')
+        .attr('class', 'chart__legend')
+        .style('text-anchor', 'start')
+        .attr('transform', 'translate(' + width + ', 40)');
+
+    legend_descript.append('text')
+        .attr('transform', 'translate(0, ' + (legend_height + 20) + ')')
+        .text("-----------------------------------------------")
+        .style('font-size', '20px')
+        .style('fill', 'white');
+    
+    for(var i = 0; i < 15; i++){
+        legend_descript.append('text')
+            .attr('transform', 'translate(-5, ' + (legend_height + 35 + 20 * i) + ')')
+            .text("|")
+            .style('font-size', '20px')
+            .style('fill', 'white');
+        legend_descript.append('text')
+            .attr('transform', 'translate(410, ' + (legend_height + 35 + 20 * i) + ')')
+            .text("|")
+            .style('font-size', '20px')
+            .style('fill', 'white');
+    }
+    legend_descript.append('text')
+        .attr('transform', 'translate(0, ' + (legend_height + 330) + ')')
+        .text("-----------------------------------------------")
+        .style('font-size', '20px')
+        .style('fill', 'white');
+    
+        var text_height = 130;
+
+
+        for(var i = 0; i < 20; i++){
+            legend_descript.append('text').attr('transform', 'translate(' + (20 * i + 10) +', ' + (text_height - 30) + ')').text("▇").style('font-size', '15px').style('fill', '#3ea856');
+            legend_descript.append('text').attr('transform', 'translate(' + (20 * i  ) +', ' + (text_height - 20) + ')').text("▇").style('font-size', '15px').style('fill', '#3ea856');
+            legend_descript.append('text').attr('transform', 'translate(' + (20 * i + 10) +', ' + (text_height - 10) + ')').text("▇").style('font-size', '15px').style('fill', '#3ea856');
+            legend_descript.append('text').attr('transform', 'translate(' + (20 * i  ) +', ' + (text_height) + ')').text("▇").style('font-size', '15px').style('fill', '#3ea856');
+        }
+        legend_descript.append('text').attr('transform', 'translate(30, ' + (text_height - 30) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(80, ' + (text_height - 25) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(120, ' + (text_height - 5) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(200, ' + (text_height - 15) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(320, ' + (text_height - 5) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(330, ' + (text_height - 25) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(250, ' + (text_height - 25) + ')').text("♣").style('font-size', '25px').style('fill', '#ff4e4e');
+
+        legend_descript.append('text').attr('transform', 'translate(360, ' + (text_height - 25) + ')').text("☃").style('font-size', '60px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(360, ' + (text_height - 130) + ')').text("☁").style('font-size', '30px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(239, ' + (text_height - 130) + ')').text("☁").style('font-size', '50px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(150, ' + (text_height - 130) + ')').text("☁").style('font-size', '40px').style('fill', '#ff4e4e');
+        legend_descript.append('text').attr('transform', 'translate(100, ' + (text_height - 150) + ')').text("☁").style('font-size', '30px').style('fill', '#ff4e4e');
+
+        legend_descript.append('text').attr('transform', 'translate(20, ' + (text_height - 150) + ')').text("☀").style('font-size', '30px').style('fill', 'red');
+        
+        
+        // u
+        legend_descript.append('text').attr('transform', 'translate(30, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(32, ' + (text_height - 100) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(34, ' + (text_height - 90) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(36, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(39, ' + (text_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(42, ' + (text_height - 65) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(46, ' + (text_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(52, ' + (text_height - 58) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(58, ' + (text_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(67, ' + (text_height - 63) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(71, ' + (text_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(75, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(79, ' + (text_height - 90) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(83, ' + (text_height - 100) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(86, ' + (text_height - 90) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(89, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(93, ' + (text_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(96, ' + (text_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+        // s
+        legend_descript.append('text').attr('transform', 'translate(165, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(155, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(150, ' + (text_height - 108) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(145, ' + (text_height - 104) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(140, ' + (text_height - 96) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(135, ' + (text_height - 85) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(140, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(145, ' + (text_height - 78) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(150, ' + (text_height - 75) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(160, ' + (text_height - 75) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(170, ' + (text_height - 75) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(173, ' + (text_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(170, ' + (text_height - 64) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(165, ' + (text_height - 58) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(160, ' + (text_height - 52) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(155, ' + (text_height - 46) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(150, ' + (text_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(145, ' + (text_height - 34) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(148, ' + (text_height - 36) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+
+        // e
+        legend_descript.append('text').attr('transform', 'translate(220, ' + (text_height - 78) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(235, ' + (text_height - 78) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(250, ' + (text_height - 78) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(260, ' + (text_height - 78) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(265, ' + (text_height - 83) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(263, ' + (text_height - 99) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(260, ' + (text_height - 105) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(253, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(245, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(235, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(230, ' + (text_height - 110) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(225, ' + (text_height - 107) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(220, ' + (text_height - 100) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(215, ' + (text_height - 95) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(215, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(215, ' + (text_height - 75) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(217, ' + (text_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(220, ' + (text_height - 65) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(223, ' + (text_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(226, ' + (text_height - 55) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(229, ' + (text_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(238, ' + (text_height - 48) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(250, ' + (text_height - 48) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(260, ' + (text_height - 48) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+        // r
+        legend_descript.append('text').attr('transform', 'translate(310, ' + (text_height - 108) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(310, ' + (text_height - 95) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(310, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(310, ' + (text_height - 65) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(310, ' + (text_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(315, ' + (text_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(320, ' + (text_height - 83) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(325, ' + (text_height - 86) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(333, ' + (text_height - 89) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(340, ' + (text_height - 92) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+        legend_descript.append('text').attr('transform', 'translate(347, ' + (text_height - 95) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+    // #endregion
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    var selected_date = getCookie('day_select');
+    // alert(selected_date);
+    if(selected_date == ''){
+        document.cookie = "day_select=2018-09-30";
+    }
+    var selected_range = getCookie('day_range');
+    if(selected_range == ''){
+        document.cookie = "day_range=7";
+    }
+    // function drawGraph(d3_data){
+        d3.json("http://127.0.0.1:3000/api/visual/date/" + selected_date + "/range/" + selected_range + "/group/" + "<%= id %>" + "/gate/0",  function(error, graph){
+            console.log(graph);
+            var group_num = graph.nodes[graph.nodes.length-1].group+1;
+            // alert(group_num);
+            if (error) throw error;
+
+            var link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("stroke-width", function(d) { return Math.sqrt(d.weight); });
+
+            var node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter().append("circle")
+                .attr("r", 5)
+                .attr("fill", function(d) { return color(d.group); })
+                .attr('id', function(d){ return 'id' + d.id; })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
+                .on("mouseover", mouseOver(.2))
+                .on("mouseout", mouseOut);
+
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(graph.links);
+
+            function ticked() {
+                link
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+                node
+                    .attr("transform", positionNode);
+            }
+
+
+            function positionNode(d){
+                if (d.x < 0) {
+                    d.x = 0
+                }
+                if (d.y < 0) {
+                    d.y = 0
+                }
+                if (d.x > width) {
+                    d.x = width
+                }
+                if (d.y > (height-80)) {
+                    d.y = height-80
+                }
+                return "translate(" + d.x + "," + d.y + ")";
+            }
+
+            var linkedByIndex = {};
+            graph.links.forEach(function(d) {
+                linkedByIndex[d.source.index + "," + d.target.index] = 1;
+            })
+
+            function isConnected(node_a, node_b) {
+                return linkedByIndex[node_a.index + "," + node_b.index] || linkedByIndex[node_b.index + "," + node_a.index] || node_a.index == node_b.index;
+            }
+
+            function mouseOver(opacity) {
+                return function(d) {
+                    node.style("stroke-opacity", function(o) {
+                        thisOpacity = isConnected(d, o) ? 1 : opacity;
+                        return thisOpacity;
+                    })
+                    node.style("fill-opacity", function(o) {
+                        thisOpacity = isConnected(d, o) ? 1 : opacity;
+                        return thisOpacity;
+                    })
+                    link.style("stroke-opacity", function(o) {
+                        return o.source === d || o.target === d ? 1 : opacity;
+                    })
+                    link.style("stroke", function(o){
+                        return o.source === d || o.target === d ? o.source.colour : "#ddd";
+                    })
+
+                    d3.select('#group_info_title')
+                        .style('text-decoration', 'none')
+                        .style('opacity', 0.5);
+                    d3.select('#user_info_title')
+                        .style('text-decoration', 'underline')
+                        .style('opacity', 1);
+                    d3.selectAll('.user_info_content')
+                        .style('display', '');
+                    d3.selectAll('.group_info_content')
+                        .style('display', 'none');
+
+                    getUserDetail(d.id, getArticle);
+
+                    getUserIP(d.id, getUserLoc);
+
+                    getLeader(d.group);
+
+                    get_group_info(d.group);
+
+                }
+            }
+            
+            function getUserDetail(id, cb){
+                var request = new XMLHttpRequest();
+                var data, art_id;
+                request.open('GET', 'http://127.0.0.1:3000/api/users/id/' + id, true);
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        // Success!
+                        // console.log(request.responseText);
+                        data = JSON.parse(request.responseText);
+                        console.log(data);
+                        // alert(data[0]['Name']);
+                        d3.selectAll('#user_article').remove();
+                        d3.selectAll('#username_node').remove();
+                        legend_descript.append('text')
+                            .attr('x', 150)
+                            .attr('y', (legend_height + 100) )
+                            .text(data[0]['Name'])
+                            .style('font-size', '20px')
+                            .style('fill', 'white')
+                            .attr('id', 'username_node')
+                            .attr('class', 'user_info_content')
+                            .attr('cursor', 'pointer')
+                            .attr('text-decoration', 'underline')
+                            .on('click', function(d){
+                                window.open("https://www.google.com.tw/search?q=" + data[0]['Name'] + "+site%3Aptt.cc");
+                            });
+                        // console.log(data[0]['Article'].length);
+                        if(data[0]['Article'].length){
+                            let len = data[0]['Article'].length;
+                            art_id = data[0]['Article'][len-1]['art_id'];
+                        }
+                        else{
+                            art_id = -1;                            
+                        }
+                        // alert(art_id);
+                        // Get User ID
+                        
+                        
+                        // alert(data[0]['Article'].length);
+                        cb(art_id);
+                    }
+                    else {
+                        console.log("Error!");
+                        alert('systerm error!')
+                    }
+                };
+                request.send();
+            }
+            
+            function getArticle(id){
+                // alert(id);
+                var request = new XMLHttpRequest();
+                if(id != '-1'){
+                    request.open('GET', 'http://127.0.0.1:3000/api/articles/nameAndUrl/id/' + id, true);
+                    request.onload = function() {
+                        if (request.status >= 200 && request.status < 400) {
+                            var data = JSON.parse(request.responseText);
+                            if(data['ArticleName'].length > 20){
+                                var part_article = "";
+                                for(var i=0; i<20;i++){
+                                    part_article += (data['ArticleName'][i]);
+                                }
+                                part_article += '...';
+                                legend_descript.append('text')
+                                .attr('x', 30)
+                                .attr('y', (legend_height + 180))
+                                .text(part_article)
+                                .style('font-size', '18px')
+                                .attr('id', 'user_article')
+                                .attr('class', 'user_info_content')
+                                .attr('fill', '#007bff')
+                                .on("click", function(){
+                                    window.open(data['URL'])
+                                })
+                                .style('cursor', 'pointer')
+                                .on('mouseover', function(d,i) {
+                                    d3.select(this)
+                                    .attr('fill', 'blue');
+                                })
+                                .on('mouseout', function(d,i) {
+                                    d3.select(this)
+                                    .attr('fill', '#007bff');
+                                });
+                            }
+                            else{
+                                legend_descript.append('text')
+                                    .attr('x', 20)
+                                    .attr('y', (legend_height + 180))
+                                    .text(data['ArticleName'])
+                                    .style('font-size', '18px')
+                                    .attr('id', 'user_article')
+                                .attr('class', 'user_info_content')
+                                    .attr('fill', '#007bff')
+                                    .on("click", function(){
+                                        window.open(data['URL'])
+                                    })
+                                    .style('cursor', 'pointer')
+                                    .on('mouseover', function(d,i) {
+                                        d3.select(this)
+                                        .attr('fill', 'blue');
+                                    })
+                                    .on('mouseout', function(d,i) {
+                                        d3.select(this)
+                                        .attr('fill', '#007bff');
+                                    });
+                            }
+                        }
+                        else{
+                            console.log('req error: Get Article in ID' + id);
+                        }
+                    };
+                    request.send();
+                }
+                else{
+                    legend_descript.append('text')
+                        .attr('x', 50)
+                        .attr('y', (legend_height+180))
+                        .text('none')
+                        .style('fill', 'white')
+                        .style('font-size', '20px')
+                        .attr('id', 'user_article')
+                        .attr('class', 'user_info_content');
+                }
+            }
+
+            function getUserIP(id,cb){
+                d3.selectAll('#user_ip').remove();
+                d3.selectAll('#user_loc').remove();
+                var request = new XMLHttpRequest();
+                request.open('GET', 'http://127.0.0.1:3000/api/users/id/' + id + '/getIP', true);
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        // Success!
+                        // console.log(request.responseText);
+                        var data = JSON.parse(request.responseText);
+                        console.log(data);
+                        // alert(data[0]['Name']);
+                        
+                        // alert(data[0]['Article'].length);
+                        var user_IP = "";
+                        if(data.length){
+                            user_IP = data[0].ip;
+                            legend_descript.append('text')
+                                .attr('x', 100)
+                                .attr('y', (legend_height + 220))
+                                .text(data[0].ip)
+                                .style('fill', 'white')
+                                .style('font-size', '20px')
+                                .attr('class', 'user_info_content')
+                                .attr('id', 'user_ip');
+                        }
+                        else{
+                            user_IP = -1;
+                            legend_descript.append('text')
+                                .attr('x', 100)
+                                .attr('y', (legend_height + 220))
+                                .text('none (the user hasn\'t post yet)')
+                                .style('fill', 'white')
+                                .style('font-size', '20px')
+                                .attr('class', 'user_info_content')
+                                .attr('id', 'user_ip');
+                        }
+                        cb(user_IP);
+                    }
+                    else {
+                        console.log("Error!");
+                        cb(-1);
+                    }
+                };
+                request.send();
+            }
+           
+            function getUserLoc(ip){
+                if(ip == -1){
+                    legend_descript.append('text')
+                                .attr('x', 30)
+                                .attr('y', (legend_height + 295))
+                                .text('none (the user doesn\'t have any posts yet)')
+                                .style('fill', 'white')
+                                .style('font-size', '20px')
+                                .attr('id', 'user_ip')
+                                .attr('class', 'user_info_content');
+                }
+                else{
+                    var request = new XMLHttpRequest();
+                    request.open('GET', 'http://ip-api.com/json/' + ip, true);
+                    request.onload = function() {
+                        if (request.status >= 200 && request.status < 400) {
+                            // Success!
+                            // console.log(request.responseText);
+                            var data = JSON.parse(request.responseText);
+                            console.log(data);
+                            legend_descript.append('text')
+                                .attr('x', 30)
+                                .attr('y', (legend_height + 295))
+                                .text(data.regionName)
+                                .style('fill', 'white')
+                                .style('font-size', '20px')
+                                .attr('class', 'user_info_content')
+                                .attr('id', 'user_loc');                           
+                        }
+                        else {
+                            console.log("Error!");
+                        }
+                    };
+                    request.send();
+                }
+            }
+
+            leaderLarge();
+
+            function leaderLarge(){
+                var req = new XMLHttpRequest();
+                req.open('GET', 'http://127.0.0.1:3000/api/groups/leaders/date/' + selected_date + '/range/' + selected_range + '/groupID/' + '<%= id %>' + '/all');
+                req.onload = function(){
+                    if (req.status >= 200 && req.status < 400) {
+                        var data = JSON.parse(req.responseText);
+                        console.log(data[0].all_group_leaders[0]);
+                        let group_length = data.length;
+                        for(var i = 0; i < group_length; i ++){
+                            let leader_length = data[i]['all_group_leaders'].length;
+
+                            if(leader_length >= 3){
+                                for(var j = 0; j < 3; j ++){
+                                    var id_leader = data[i].all_group_leaders[j];
+                                    console.log(id_leader);
+                                    d3.select('#id'+ data[i].all_group_leaders[j]).attr('r', 10);
+                                }
+                            }
+                            else{
+                                for(var j = 0; j < leader_length; j ++){
+                                    d3.select('#id'+ data[i].all_group_leaders[j]).attr('r', 10);
+                                }
+                            }
+                            
+                        }        
+                    }
+                    else {
+                        alert("Error in leaderLarge!");
+                    }
+                };
+                req.send();
+            }
+            function mouseOut() {
+                node.style("stroke-opacity", 1);
+                node.style("fill-opacity", 1);
+                link.style("stroke-opacity", 1);
+                link.style("stroke", "#ddd");
+            }
+
+            function getUserName(id){
+                var request = new XMLHttpRequest();
+                var data, art_id;
+                request.open('GET', 'http://127.0.0.1:3000/api/users/id/' + id, true);
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 400) {
+                        // Success!
+                        // console.log(request.responseText);
+                        data = JSON.parse(request.responseText);
+                        console.log(data);
+                        // alert(data[0]['Name']);
+                        console.log(data[0]['Name']);
+                        return(data[0]['Name']);
+                    }
+                }
+                request.send();
+            }
+
+            function getLeader(group){
+                var request = new XMLHttpRequest();
+                    request.open('GET', 'http://127.0.0.1:3000/api/groups/leaders/date/' + selected_date + '/range/' + selected_range + '/groupID/' + "<%= id %>" + '/internalGroupId/' + group, true);
+                    request.onload = function() {
+                        if (request.status >= 200 && request.status < 400) {
+                            // Success!
+                            // console.log(request.responseText);
+                            d3.selectAll('#group_leader').remove();
+                            var data = JSON.parse(request.responseText);
+                            console.log(data);
+                            console.log(data[0].group_leader_name);
+                            let leader_len = data.length, leader_str = ""; 
+                            if(leader_len < 3){
+                                for(var i=0;i<leader_len;i++){
+                                    if(i == 0){
+                                        leader_str += data[i].group_leader_name;
+                                    }
+                                    else{
+                                        leader_str += ", " + data[i].group_leader_name;
+                                    }
+                                }
+                            }        
+                            else{                   
+                                for(var i=0;i<3;i++){
+                                    if(i == 0){
+                                        leader_str += data[i].group_leader_name;
+                                    }
+                                    else{
+                                        leader_str += ", " + data[i].group_leader_name;
+                                    }
+                                }
+                            }
+                            svg.append('text')
+                                .attr('x', 150)
+                                .attr('y', (legend_height + 370))
+                                .text(leader_str)
+                                .style('fill', 'white')
+                                .style('font-size', '20px')
+                                .attr('id', 'group_leader');                           
+                        }
+                        else {
+                            console.log("Error!");
+                        }
+                    };
+                    request.send();
+            }
+            
+            function group_info(){
+                setTimeout(function(){
+                    d3.select('#user_info_title')
+                        .style('text-decoration', 'none')
+                        .style('opacity', 0.5);
+                    d3.select('#group_info_title')
+                        .style('text-decoration', 'underline')
+                        .style('opacity', 1);
+                    d3.selectAll('.user_info_content')
+                        .style('display', 'none');
+                    d3.selectAll('.group_info_content')
+                        .style('display', '');
+                }, 500); 
+                
+            }
+
+            function user_info(){
+                d3.select('#group_info_title')
+                    .style('text-decoration', 'none')
+                    .style('opacity', 0.5);
+                d3.select('#user_info_title')
+                    .style('text-decoration', 'underline')
+                    .style('opacity', 1);
+                d3.selectAll('.user_info_content')
+                    .style('display', '');
+                d3.selectAll('.group_info_content')
+                    .style('display', 'none');
+            }
+            
+            function get_group_info(id){
+                d3.selectAll('.group_info_article').remove();
+                var req = new XMLHttpRequest();
+                req.open('GET', 'http://127.0.0.1:3000/api/groups/leaders/date/' + selected_date + '/range/' + selected_range + '/groupID/' + '<%= id %>' + '/internalGroupId/' + id + '/article');
+                req.onload = function(){
+                    if(req.status >= 200 && req.status < 400){
+                        var data = JSON.parse(req.responseText);
+                        console.log(data);
+                        for(var i =0; i < 3; i++){
+                            console.log(data['push'][i]['URL']);                            
+                            if(data['push'][i]['ArticleName'].length < 22){
+                                legend_descript.append('a')
+                                    .attr('xlink:href', data['push'][i]['URL'])
+                                    .attr('target', '_blank')
+                                    .append('text')
+                                    .text(data['push'][i]['ArticleName'])
+                                    .style('cursor', 'pointer')
+                                    .attr('transform', 'translate(50, ' + (legend_height + 130 + 30 * i) + ')')
+                                    .attr('class', 'group_info_content group_info_article')
+                                    .style('font-size', '18px')
+                                    .style('fill', 'white')
+                                    .style('display', 'none');
+                            }
+                            else{
+                                let part_art = '';
+                                for(var j=0; j<20; j++){
+                                    part_art += data['push'][i]['ArticleName'][j];
+                                }
+                                part_art += '...';
+                                legend_descript.append('a')
+                                    .attr('xlink:href', data['boo'][i]['URL'])
+                                    .attr('target', '_blank')
+                                    .append('text')
+                                    .text(part_art)
+                                    .attr('transform', 'translate(50, ' + (legend_height + 130 + 30 * i) + ')')
+                                    .attr('class', 'group_info_content group_info_article')
+                                    .style('cursor', 'pointer')
+                                    .style('font-size', '18px')
+                                    .style('fill', 'white')
+                                    .style('display', 'none');
+                            }
+                            
+                        }
+                        for(var i =0; i < 3; i++){
+                            if(data['boo'][i]['ArticleName'].length < 22){
+                                legend_descript.append('a')
+                                    .attr('xlink:href', data['boo'][i]['URL'])
+                                    .attr('target', '_blank')
+                                    .append('text')
+                                    .text(data['boo'][i]['ArticleName'])
+                                    .attr('transform', 'translate(50, ' + (legend_height + 250 + 30 * i) + ')')
+                                    .attr('class', 'group_info_content group_info_article')
+                                    .style('font-size', '18px')
+                                    .style('cursor', 'pointer')
+                                    .style('fill', 'white')
+                                    .style('display', 'none');
+                            }
+                            else{
+                                let part_art = '';
+                                for(var j=0; j<20; j++){
+                                    part_art += data['boo'][i]['ArticleName'][j];
+                                }
+                                part_art += '...';
+                                legend_descript.append('a')
+                                    .attr('xlink:href', data['boo'][i]['URL'])
+                                    .attr('target', '_blank')
+                                    .append('text')
+                                    .text(part_art)
+                                    .attr('transform', 'translate(50, ' + (legend_height + 250 + 30 * i) + ')')
+                                    .attr('class', 'group_info_content group_info_article')
+                                    .style('font-size', '18px')
+                                    .style('cursor', 'pointer')
+                                    .style('fill', 'white')
+                                    .style('display', 'none');
+                            }
+                            
+                        }
+                    }
+                    else{
+                        alert('Error in get_group_info');
+                    }
+                };
+                req.send();
+            }
+
+            legend_descript.append('text')
+                .text('User Info')
+                .attr('transform', 'translate(80, ' + (legend_height + 50) + ')')
+                .style('font-size', '20px')
+                .style('fill', 'white')
+                .style('text-decoration', 'underline')
+                .style('cursor', 'pointer')
+                .attr('id', 'user_info_title')
+                .on('click', user_info);
+
+            legend_descript.append('text')
+                .text('Group Info')
+                .attr('transform', 'translate(220, ' + (legend_height + 50) + ')')
+                .style('font-size', '20px')
+                .style('fill', 'white')
+                .style('opacity', 0.5)
+                .style('cursor', 'pointer')
+                .attr('id', 'group_info_title')
+                .on('click', group_info);
+
+            legend_descript.append('text')
+                .text('User Name:')
+                .attr('transform', 'translate(20, ' + (legend_height + 100) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'user_info_content')
+                .style('fill', 'white');
+
+            legend_descript.append('text')
+                .text('Push: ')
+                .attr('transform', 'translate(20, ' + (legend_height + 100) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'group_info_content')
+                .style('display', 'none')
+                .style('fill', 'white');
+
+            legend_descript.append('text')
+                .text('Latest Published Article:')
+                .attr('transform', 'translate(20, ' + (legend_height + 140) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'user_info_content')
+                .style('fill', 'white');
+
+            legend_descript.append('text')
+                .text('User IP:')
+                .attr('transform', 'translate(20, ' + (legend_height + 220) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'user_info_content')
+                .style('fill', 'white');
+            
+            legend_descript.append('text')
+                .text('Boo:')
+                .attr('transform', 'translate(20, ' + (legend_height + 220) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'group_info_content')
+                .style('display', 'none')
+                .style('fill', 'white');
+            
+            legend_descript.append('text')
+                .text('User Location:')
+                .attr('transform', 'translate(20, ' + (legend_height + 260) + ')')
+                .style('font-size', '20px')
+                .attr('class', 'user_info_content')
+                .style('fill', 'white');
+            
+            svg.append('text')
+                .text('Group Leaders: ')
+                .attr('transform', 'translate(120, ' + (legend_height + 340) + ')')
+                .style('font-size', '20px')
+                .style('fill', 'white');
+        });
+    
+    
+
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+    </script>
+</body>
+</html>
