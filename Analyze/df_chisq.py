@@ -69,7 +69,7 @@ def make_excel(date, day_range, inter_gate):
                 "total_tf":doc["tf"],
                 "exp_df":[exp_df],
                 "df_chi": [df_chi],
-                "n11*df_chi": df_multi_chi
+                "n11*df_chi": [df_multi_chi]
             }
 
             tmp_df = pd.DataFrame(data)
