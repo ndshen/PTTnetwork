@@ -26,9 +26,8 @@ mongoInputF=data_file_dir+"group"
 
 # relation below gate will be ignored and will not be print in the output
 GATE=0.01
-INTER_GATE = 10
-
-OFFICIAL = 0
+INTER_GATE = int(sys.argv[1])
+OFFICIAL = int(sys.argv[2])
 
 HOST='127.0.0.1'
 PORT=27020
@@ -257,7 +256,7 @@ def updateGroup(fileName, date, day_range, db, total_user_list):
 
 
 def main(dbPassword, date, day_range = 7, append=False):
-
+    print("Start Process, date: {}, day_range: {}, inter_gate: {}".format(date, str(day_range), str(INTER_GATE)))
     s = datetime.datetime.now()
 
     createFileNameTail(date, day_range)
@@ -284,7 +283,7 @@ def main(dbPassword, date, day_range = 7, append=False):
     total_user_list = iterateRelation(relationCollection, relationSkip, db, day_range, date)
     mapSLMinput(total_user_list)
 
-    p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'/../ModularityOptimizer.jar', SLMinput_mapped, SLMoutputF]+SLMargs)
+    p =subprocess.Popen(['java','-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar', SLMinput_mapped, SLMoutputF]+SLMargs)
     returnCode = p.wait()
 
     if returnCode != 0:
@@ -299,9 +298,10 @@ def main(dbPassword, date, day_range = 7, append=False):
     print("Finished, spent: ", e-s)
 
 if __name__ == "__main__":
-    # print(os.path.dirname(__file__))
-    if len(sys.argv) == 4:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]))
-    elif len(sys.argv) ==5:
-        main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]) ,append=True)
+    main(dbPassword=sys.argv[3], date=sys.argv[4], day_range= int(sys.argv[5]))
+    # p=subprocess.Popen(['java', '-jar', os.path.dirname(__file__)+'../ModularityOptimizer.jar'])
+    # if len(sys.argv) == 4:
+    #     main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]))
+    # elif len(sys.argv) ==5:
+    #     main(dbPassword=sys.argv[1], date=sys.argv[2], day_range= int(sys.argv[3]) ,append=True)
     # python .\Relation\outside-relation\overall_relation.py swordtight 2018-09-20 1
