@@ -26,7 +26,7 @@ mongoInputF=data_file_dir+"group"
 
 # relation below gate will be ignored and will not be print in the output
 GATE=0.01
-INTER_GATE = 15
+INTER_GATE = 10
 
 OFFICIAL = 0
 

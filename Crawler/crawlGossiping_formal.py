@@ -19,7 +19,7 @@ import mes_black_list
 urllib3.disable_warnings()
 month = dict()
 month ={'Jan':'1','Feb':'2','Mar':'3','Apr':'4','May':'5','Jun':'6','Jul':'7','Aug':'8','Sep':'9','Oct':'10','Nov':'11','Dec':'12'}
-
+NOW_TIME = datetime.now().replace(microsecond=0)
 
 def print_log(*arg):
     string = ''
@@ -322,8 +322,8 @@ def download(articles,res): #download the content, choose what attr will be craw
                 #print_log(latesttime,pubdate)
             try:
                 pubdate = datetime.strptime(pubdate_str[3].text, '%a %b %d %H:%M:%S %Y')
-                print(datetime.now().replace(microsecond=0), pubdate)
-                if  datetime.now().replace(microsecond=0) - pubdate > timedelta(days= int(TIME_FRAME)):
+                print(NOW_TIME, pubdate)
+                if  NOW_TIME - pubdate > timedelta(days= int(TIME_FRAME)):
                     print_log(str(pubdate))
                     print_log('exceed our timeframe %s day' % TIME_FRAME)
                     stop_crawler = 1
