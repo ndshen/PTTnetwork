@@ -18,11 +18,11 @@ DBNAME='CrawlGossiping_formal'
 client=MongoClient(host=HOST,port=PORT,username=USERNAME,password="swordtight")
 db=client[DBNAME]
 
-DATE = "2018-09-30"
+DATE = "2018-10-07"
 DAY_RANGE = 7
 INTER_GATE = 10
-group_num = 6
-group_list = [0,1,2,3,4,5]
+group_num = 5
+group_list = [0,1,2,3,4]
 
 termCollection = db["Term"]
 top30Collection = db["finalGroup"]
@@ -69,7 +69,7 @@ def make_excel(date, day_range, inter_gate):
                 "total_tf":doc["tf"],
                 "exp_df":[exp_df],
                 "df_chi": [df_chi],
-                "n11*df_chi": df_multi_chi
+                "n11*df_chi": [df_multi_chi]
             }
 
             tmp_df = pd.DataFrame(data)
