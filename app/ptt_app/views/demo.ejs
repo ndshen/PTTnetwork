@@ -1,0 +1,574 @@
+<html>
+    <head>
+        <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+        <link rel="stylesheet" href="../assets/style.css" type="text/css">
+        <link rel="stylesheet" href="../assets/d3-graph.css" type="text/css">
+        <script src="../assets/d3.v4.min.js"></script>
+        <script src="../assets/jquery.min.js"></script>
+        <link rel="stylesheet" href="../assets/bootstrap.min.css" type="text/css">
+       
+    </head>
+    <body style="background-color: black; width: 1200px;">
+        <nav class="navbar navbar-expand-sm fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="<%= home_link %>" style="font-size:35px;">IMNINJA</a>
+            </div>
+        </nav>
+        <br><br><br><br>
+        <div class="tmp" style="margin-left: 100px;"></div>
+        <div class="row">
+            <!-- <div class="col-xs-8 demo_d3"></div>
+            <div class="col-xs-4"></div> -->
+        </div>
+        <script>
+            var width = 550,
+                height = 550,
+                maxRadius = 9,
+                minRadius = 6,
+                legend_height = 60;
+
+            var forceCollide = d3.forceCollide()
+                .radius(function(d) { return d.radius + 3; })
+                .iterations(1.5);
+
+            var svg = d3.select(".row").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("id", "test")
+                .attr("class", "col-md-8 graph_svg")
+            .append('g')
+                .attr('transform', 'translate(' + (width / 2 + 100) + ',' + height / 2 + ')');
+            var legend_width = 20;
+            // #region of legend design
+            var legend_svg = d3.select(".row").append("svg")
+                .attr("width", 400)
+                .attr("height", 550)
+                .attr("class", "col-md-4")
+            .append('g')
+                .attr('transform', 'translate(0, ' + legend_height + ')');
+                //G
+                legend_svg.append('text').attr('transform', 'translate(' + (10 + legend_width) + ', ' + (legend_height - 87) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (30 + legend_width) + ', ' + (legend_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (-10 + legend_width) + ', ' + (legend_height - 80) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (-15 + legend_width) + ', ' + (legend_height - 65) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (-15 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (-10 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (10 + legend_width) + ', ' + (legend_height - 32) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (30 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (30 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (20 + legend_width) + ', ' + (legend_height - 55) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+                //R
+                legend_svg.append('text').attr('transform', 'translate(' + (60 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (60 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (60 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (70 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (80 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (90 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                
+                //O
+                legend_svg.append('text').attr('transform', 'translate(' + (140 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (125 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (120 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (115 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (120 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (130 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (140 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (150 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (155 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (160 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (155 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (150 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                
+                //U
+                legend_svg.append('text').attr('transform', 'translate(' + (190 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (192 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (194 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (195 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (196 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (197 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (215 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (222 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (223 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (225 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (226 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (228 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (230 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+
+                //P
+                legend_svg.append('text').attr('transform', 'translate(' + (260 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (260 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (260 + legend_width) + ', ' + (legend_height - 30) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (260 + legend_width) + ', ' + (legend_height - 10) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (280 + legend_width) + ', ' + (legend_height - 70) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (288 + legend_width) + ', ' + (legend_height - 65) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (296 + legend_width) + ', ' + (legend_height - 60) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (296 + legend_width) + ', ' + (legend_height - 50) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (288 + legend_width) + ', ' + (legend_height - 40) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+                legend_svg.append('text').attr('transform', 'translate(' + (280 + legend_width) + ', ' + (legend_height - 35) + ')').text("▇").style('font-size', '20px').style('fill', '#ffc107');
+            legend_svg.append('text')
+                .attr('transform', 'translate(' + (-20 + legend_width) + ', ' + legend_height + ')')
+                .text("---------------------------------------")
+                .style('font-size', '20px')
+                .style('fill', 'white');
+            legend_svg.append('text')
+                .text("Numbers of members : ")
+                .attr('transform', 'translate(' + (20 + legend_width) + ', ' + (legend_height + 50) + ')')
+                .style('font-size', '20px')
+                .style('fill', 'white');
+            legend_svg.append('text')
+                .text("Group Topic")
+                .attr('id', 'group_topic_title')
+                .attr('transform', 'translate(' + (20 + legend_width) + ', ' + (legend_height + 140) + ')')
+                .style('font-size', '20px')
+                .attr('cursor', 'pointer')
+                .style('fill', 'white')
+                .on('click', function(){
+                    d3.selectAll('#group_article')
+                    .style('display', 'none');
+                    d3.selectAll('#group_topic')
+                    .style('display', '');
+                    d3.select('#group_article_title')
+                    .style('opacity', 0.5);
+                    d3.select('#group_topic_title')
+                    .style('opacity', 1);
+                });
+            legend_svg.append('text')
+                .text("Group Article")
+                .attr('id', 'group_article_title')
+                .attr('transform', 'translate(' + (170 + legend_width) + ', ' + (legend_height + 140) + ')')
+                .style('font-size', '20px')
+                .attr('cursor', 'pointer')
+                .style('fill', 'white')
+                .on('click', function(){
+                    d3.selectAll('#group_article')
+                    .style('display', '');
+                    d3.selectAll('#group_topic')
+                    .style('display', 'none');
+                    d3.select('#group_article_title')
+                    .style('opacity', 1);
+                    d3.select('#group_topic_title')
+                    .style('opacity', 0.5);
+                });
+            legend_svg.append('text')
+                .attr('transform', 'translate(' + (-20 + legend_width) + ', ' + (legend_height + 365) + ')')
+                .text("---------------------------------------")
+                .style('font-size', '20px')
+                .style('fill', 'white');
+            legend_svg.append('text')
+                .attr('transform', 'translate(' + (50 + legend_width) + ', ' + (legend_height + 390) + ')')
+                .text("Powered by")
+                .style('font-size', '20px')
+                .style('fill', 'white');
+            legend_svg.append('text')
+                .attr('transform', 'translate(' + (160 + legend_width) + ', ' + (legend_height + 390) + ')')
+                .text(" IM NINJA")
+                .style('font-size', '20px')
+                .style('fill', 'rgb(249, 193, 0)')
+                .attr('cursor', 'pointer')
+                .on('mouseover', function(){
+                    d3.select(this).style('fill', 'blue');
+                })
+                .on('click', function(){
+                    window.open('mailto:kay61515@gmail.com');
+                })
+                .on('mouseout', function(){
+                    d3.select(this).style('fill', 'rgb(249, 193, 0)');
+                });
+            
+            for(var i=0; i< 18;i++){
+                legend_svg.append('text')
+                    .attr('transform', 'translate(' + (-18 + legend_width) + ', ' + (20 * i + legend_height + 15) + ')')
+                    .text("|")
+                    .style('font-size', '20px')
+                    .style('fill', 'white');
+                legend_svg.append('text')
+                    .attr('transform', 'translate(' + (317 + legend_width) + ', ' + (20 * i + legend_height + 15) + ')')
+                    .text("|")
+                    .style('font-size', '20px')
+                    .style('fill', 'white');
+            }
+            // #endregion
+           
+            var selected_date = getCookie('day_select');
+            if(selected_date == ''){
+                selected_date = '2018-09-30';
+                document.cookie = "day_select=2018-09-30";
+            }
+            var selected_range = getCookie('day_range');
+            if(selected_range == ''){
+                selected_range = '7';
+                document.cookie = "day_range=7";
+            }
+
+            var today = new Date();
+            var yy = today.getFullYear(), dd = today.getDate(), mm = ((today.getMonth() + 1) < 10 ? '0' : '') + (today.getMonth() + 1);
+            req_date = yy + '-' + mm + '-' + dd;
+            var getDay = new XMLHttpRequest();
+            getDay.open('GET', 'http://127.0.0.1:3000/api/groups/available_time', true);
+            getDay.onload = function(){
+                if (getDay.status >= 200 && getDay.status < 400) {
+                    var dayRange = JSON.parse(getDay.responseText);
+                    
+                    var day2beSelected = [];
+                    day2beSelected.push("Date: " + selected_date + ", Range: " + selected_range);
+                    for(var i = 0; i < dayRange.length; i++){
+                        if(dayRange[i].date == selected_date )
+                        {   
+                            if( dayRange[i].day_range == selected_range)
+                            {
+                                continue;
+                            }
+                        }
+                        day2beSelected.push("Date: " + dayRange[i].date + ", Range: " + dayRange[i].day_range);
+                    }
+                    var select = d3.select(".tmp")
+                        .append('select')
+                        .attr('class','select')
+                        .on('change',select_onchange)
+                        .attr('id', 'daySelect');
+                   
+                    var options = select
+                        .selectAll('option')
+                        .data(day2beSelected).enter()
+                        .append('option')
+                        .text(function (d) { return d; });
+
+                }
+            };
+            getDay.send();
+            
+            function select_onchange(){
+                var d = document.getElementById('daySelect');
+                let selected_date = '';
+                for (var i = 5; i < 16; i++) selected_date += d.options[d.selectedIndex].text[i];
+                let selected_day_range =  d.options[d.selectedIndex].text[25];
+                // alert(selected_date);
+                // alert(selected_day_range);
+                document.cookie = "day_select=" + selected_date;
+                document.cookie = "day_range=" + selected_day_range;
+                location.reload();
+            }
+            
+            draw_d3(selected_date, selected_range);
+            function draw_d3(selected_date, selected_range){
+                d3.select('#group_article_title')
+                    .style('opacity', 0.5);
+                    d3.select('#group_topic_title')
+                    .style('opacity', 1);
+                if(selected_date == ''){
+                    alert('Please input the date!!!');
+                }
+                else{
+                    // alert(selected_date);
+                    // alert(selected_range);
+                    var d3_req = new XMLHttpRequest();
+                    d3_req.open('GET', 'http://127.0.0.1:3000/api/groups/date/' + selected_date + '/range/' + selected_range, true);
+                        d3_req.onload = function() {
+                        if (d3_req.status >= 200 && d3_req.status < 400) {
+                            d3_data = JSON.parse(d3_req.responseText);
+                            console.log(JSON.stringify(d3_data));
+                            // alert(d3_data.length);
+                            var n = 150, // total number of circles
+                                m = d3_data.length; // number of distinct clusters
+
+                            var group_class = new Array(0);
+                            var sum_count = 0;
+                            for(var i=0;i<d3_data.length;i++){
+                                sum_count += d3_data[i].group_count;
+                            }
+                            // alert(sum_count);
+                            for(var i=0; i < d3_data.length; i++){
+                                for(var j=0; j < d3_data[i].group_count / sum_count * n; j++){
+                                    group_class.push(d3_data[i].group_id);
+                                }
+                            }
+                            // alert(group_class);
+                            var color = d3.scaleOrdinal(d3.schemeCategory10)
+                                .domain(d3.range(m));
+                            
+                            
+                            var clusters = new Array(m);
+                            var nodes = d3.range(group_class.length).map(function(iter) {
+                                var i = group_class[iter],
+                                    r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius + minRadius,
+                                    d = {cluster: i, radius: r, group: "group_id_" + group_class[iter], group_id: group_class[iter]};
+                                if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
+                                return d;
+                            });
+                            console.log(nodes);
+
+                            var force = d3.forceSimulation()
+                                .nodes(nodes)
+                                .force("center", d3.forceCenter())
+                                .force("collide", forceCollide)
+                                .force("cluster", forceCluster)
+                                .force("gravity", d3.forceManyBody(100))
+                                .force("x", d3.forceX().strength(.6))
+                                .force("y", d3.forceY().strength(.6))
+                                .on("tick", tick);
+                            
+                            var circle = svg.selectAll("circle")
+                                .data(nodes)
+                            .enter().append("circle")
+                                .attr("r", function(d) { return d.radius; })
+                                .attr("fill", function(d) { return color(d.cluster); })
+                                .attr("class", function(d){return d.group;})
+                                .call(d3.drag()
+                                    .on("start", dragstarted)
+                                    .on("drag", dragged)
+                                    .on("end", dragended))
+                                .on("mouseover", function(d, i){
+                                    d3.select('#group_id').remove();
+                                    d3.selectAll('#group_topic').remove();
+                                    d3.select('#group_members').remove();
+                                    d3.selectAll("circle")
+                                        .attr('opacity', 0.3);
+                                    d3.select('#group_article_title')
+                                        .style('opacity', 0.5);
+                                        d3.select('#group_topic_title')
+                                        .style('opacity', 1);
+                                    d3.selectAll("."+d.group)
+                                        .attr('cursor', 'pointer')
+                                        .attr('r', function(d){return d.radius * 1.1})
+                                        .attr('opacity', 1);
+                                    legend_svg.append('text')
+                                        .text(function(){
+                                            for(var i = 0; i < d3_data.length; i++){
+                                                if(d3_data[i].group_id == d.group_id){
+                                                    return d3_data[i].group_count;
+                                                }
+                                            }
+                                        })
+                                        .attr('id', 'group_members')
+                                        .attr('transform', 'translate(120, ' + (legend_height + 95) + ')')
+                                        .style('font-size', '20px')
+                                        .style('fill', 'white');
+                                    getGroupTopic(d.group_id);
+                                    getGroupArticle(d.group_id);
+                                })
+                                .on("click", function(d){
+                                    $("html").fadeOut("slow");
+                                    setTimeout(function(){window.open("group/" + d.group_id, "_self");},500);
+                                })
+                                .on("mouseout", function(d, i){
+                                    d3.selectAll("circle")
+                                        .attr('opacity', 1);
+                                    d3.selectAll("."+d.group)
+                                        .attr('fill',  function(d) { return color(d.cluster); })
+                                        .attr('r', function(d){return d.radius;});
+                                });
+
+                            circle.transition()
+                                .duration(1500)
+                                .delay(function(d, i) { return i * 5; })
+                                .attrTween("r", function(d) {
+                                    var i = d3.interpolate(0, d.radius);
+                                    return function(t) { return d.radius = i(t); };
+                                });
+                            
+                            function getGroupTopic(id){
+                                var request = new XMLHttpRequest();
+                                request.open('GET', 'http://127.0.0.1:3000/api/features/date/' + selected_date + '/range/' + selected_range + '/group/' + id, true);
+                                request.onload = function() {
+                                    if (request.status >= 200 && request.status < 400) {
+                                        // Success!
+                                        var data = JSON.parse(request.responseText);
+                                        d3.selectAll('#group_topic').remove();
+                                        let data_len = data.top_keywords.length;
+                                        if(data_len > 10){
+                                            for(var i = 0;i<5;i++){
+                                                legend_svg.append('text')
+                                                    .text((i+1)+ ".")
+                                                    .attr('id', 'group_topic')
+                                                    .attr('transform', 'translate(60, ' + (180 + legend_height + 30 * i) +')')
+                                                    .style('font-size', '20px')
+                                                    .style('fill', 'white');
+                                                legend_svg.append('text')
+                                                    .text(data.top_keywords[i])
+                                                    .attr('id', 'group_topic')
+                                                    .attr('transform', 'translate(80, ' + (180 + legend_height + 30 * i) +')')
+                                                    .style('font-size', '20px')
+                                                    .style('fill', 'white');
+                                            }
+                                            for(var i = 0;i<5;i++){
+                                                legend_svg.append('text')
+                                                    .text((i+6)+ ".")
+                                                    .attr('id', 'group_topic')
+                                                    .attr('transform', 'translate(180, ' + (180 + legend_height + 30 * i) +')')
+                                                    .style('font-size', '20px')
+                                                    .style('fill', 'white');
+                                                legend_svg.append('text')
+                                                    .text(data.top_keywords[i+5])
+                                                    .attr('id', 'group_topic')
+                                                    .attr('transform', 'translate(200, ' + (180 + legend_height + 30 * i) +')')
+                                                    .style('font-size', '20px')
+                                                    .style('fill', 'white');
+                                            }
+                                        }
+                                        else{
+                                            if(data_len <= 5){
+                                                for(var i=0;i<data_len;i++){
+                                                    legend_svg.append('text')
+                                                        .text((i+1) + ".")
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(60, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                    legend_svg.append('text')
+                                                        .text(data.top_keywords[i])
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(80, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                }
+                                            }
+                                            else{
+                                                for(var i = 0;i<5;i++){
+                                                    legend_svg.append('text')
+                                                        .text((i+1)+ ".")
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(60, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                    legend_svg.append('text')
+                                                        .text(data.top_keywords[i])
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(80, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                }
+                                                for(var i = 0;i<(data_len-5);i++){
+                                                    legend_svg.append('text')
+                                                        .text((i+6)+ ".")
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(178, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                    legend_svg.append('text')
+                                                        .text(data.top_keywords[i+5])
+                                                        .attr('id', 'group_topic')
+                                                        .attr('transform', 'translate(200, ' + (180 + legend_height + 30 * i) +')')
+                                                        .style('font-size', '20px')
+                                                        .style('fill', 'white');
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        console.log("Error!");
+                                    }
+                                };
+                                request.send();
+                            }
+                            
+                            function getGroupArticle(id){
+                                var request = new XMLHttpRequest();
+                                request.open('GET', 'http://127.0.0.1:3000/api/groups/topArticles/date/' + selected_date + '/range/' + selected_range + '/groupID/' + id + '/limit/5');
+                                request.onload = function(){
+                                    if (request.status >= 200 && request.status < 400) {
+                                        var data = JSON.parse(request.responseText);
+                                        d3.selectAll('#group_article').remove();
+                                        for(var i = 0; i < 5; i++){
+                                            var part_article = '';
+                                            if(data[i].name.length > 15){
+                                                for(var j = 0; j < 15; j++){
+                                                    part_article += (data[i].name[j]);
+                                                }
+                                                part_article += '...';
+                                                legend_svg
+                                                    .append('a')
+                                                    .attr('xlink:href', data[i].url)
+                                                    .attr("target","_blank")
+                                                    .append('text')
+                                                    .text(part_article)
+                                                    .attr('id', 'group_article')
+                                                    .attr('transform', 'translate(30, ' + (180 + legend_height + 30 * i) +')')
+                                                    .style('font-size', '20px')
+                                                    .style('fill', '#007bff')
+                                                    .style('cursor', 'pointer')
+                                                    .style('display', 'none');
+                                            }
+                                            else{
+                                                legend_svg
+                                                .append('a')
+                                                .attr('xlink:href', data[i].url)
+                                                .attr("target","_blank")
+                                                .append('text')
+                                                .text(data[i].name)
+                                                .attr('id', 'group_article')
+                                                .attr('transform', 'translate(30, ' + (180 + legend_height + 30 * i) +')')
+                                                .style('font-size', '20px')
+                                                .style('fill', '#007bff')
+                                                .style('cursor', 'pointer')
+                                                .style('display', 'none');
+                                            }
+                                            
+                                        }
+                                    }
+                                    else{
+                                        alert('Error in getting group article');
+                                    }
+                                };
+                                request.send();
+                            }
+
+                            function forceCluster(alpha) {
+                                for (var i = 0, n = nodes.length, node, cluster, k = alpha * 1; i < n; ++i) {
+                                    node = nodes[i];
+                                    cluster = clusters[node.cluster];
+                                    node.vx -= (node.x - cluster.x) * k;
+                                    node.vy -= (node.y - cluster.y) * k;
+                                }
+                            }
+
+                            function tick() {
+                                circle
+                                    .attr("cx", function(d) { return d.x; })
+                                    .attr("cy", function(d) { return d.y; });
+                            }
+                            
+
+                            function dragstarted(d) {
+                                if (!d3.event.active) force.alphaTarget(0.5).restart();
+                                d.fx = d.x;
+                                d.fy = d.y;
+                            }
+
+                            function dragged(d) {
+                                d.fx = d3.event.x;
+                                d.fy = d3.event.y;
+                            }
+
+                            function dragended(d) {
+                                if (!d3.event.active) force.alphaTarget(0);
+                                d.fx = null;
+                                d.fy = null;
+                            }
+                        }
+                        else {
+                            alert("Error in parsing data.");
+                        }
+                    }
+                    d3_req.send();
+                }
+            }
+            
+            function getCookie(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for(var i = 0; i <ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
+        </script>
+    </body>
+</html>

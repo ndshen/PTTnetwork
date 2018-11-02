@@ -1,0 +1,320 @@
+body{
+    font-family: 'Courier New', Courier, monospace;
+}
+
+section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo { margin: auto; }
+.vert { transform-origin: center bottom; }
+.hori { transform-origin: 0% 50%; }
+.diag-left { transform-origin: 100% 100%; }
+.diag-right { transform-origin: 100% 0%; }
+
+.stripes path,
+.text-fills path,
+.katakana path,
+.line {
+  opacity: 0
+}
+button#enter_btn{
+    cursor: pointer;
+    background-color: rgb(32, 32, 32);
+    color: rgb(249, 193, 0);
+    width: 125px;
+    height: 60px;
+    font-size: 20px;
+    border-color: rgb(249, 193, 0);
+    border: 2.5px solid;
+    border-radius: 25px;
+    transition:1s;
+    /* Animation */
+    animation-delay: 12s;
+    -webkit-animation-duration: 5s;
+    animation-duration: 5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+#enter_btn:hover{
+    background-color: rgb(249, 193, 0);
+    color: rgb(32, 32, 32);
+}
+@-webkit-keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+.fadeIn {
+    -webkit-animation-name: fadeIn;
+    animation-name: fadeIn;
+}
+.home_center{
+    height:100px;
+    margin-top:450px;
+}
+/* TypeWritter */
+.line-1{
+    margin-top:270px !important;
+    color: white; 
+    font-size: 20px;
+    /* margin: 300px 0 0 10px; */
+    white-space: nowrap;
+    overflow: hidden;
+    width: 480px;
+    height: 30px;
+    animation: type 4s steps(60, end); 
+    /* Animation */
+    animation-delay: 8.2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+.line-2{
+    margin-top:340px !important;
+    animation-delay: 3s;
+    color: white; 
+    font-size: 20px;
+    /* margin: 300px 0 0 10px; */
+    white-space: nowrap;
+    overflow: hidden;
+    width: 200px;
+    animation: type2 8s steps(60, end); 
+    height: 30px;
+    /* Animation */
+    animation-delay: 8.2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+.typing-blink{
+    animation: blink 1s infinite;
+}
+@keyframes type{ 
+    from { width: 0; } 
+} 
+@keyframes type2{
+    0%{width: 0;}
+    50%{width: 0;}
+    100%{ width: 45%; } 
+} 
+@keyframes blink{
+    to{opacity: .0;}
+}
+/* End TypeWritter */
+/* ::selection{
+    background: black;
+} */
+.center{
+    text-align: center;
+    margin: auto;
+}
+.logo-img{
+    width: 220px;
+    height: 180px;
+    /* Animation */
+    animation-delay: 11s;
+    -webkit-animation-duration: 5s;
+    animation-duration: 5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+#mainNav {
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    background-color: transparent;
+    transition: background-color 0.5s ease-in-out;
+}
+
+.navbar-brand{
+    font-family: 'Nunito';
+    color: rgb(249, 193, 0);
+    font-weight: 90;
+    font-size: 35px;
+}
+.nav-link{
+    font-size: 18px;
+    padding: 1.5rem 1.5rem 1.25rem !important;
+    color: rgba(255, 255, 255, 0.75);
+}
+.nav-arrow{
+    opacity: 0;
+}
+.nav-link:hover{
+    color: white;
+}
+.nav-link:hover .nav-arrow{
+    color: white;
+    opacity: 1;
+}
+#mainNav.navbar-shrink {
+    background-color: rgba(255, 255, 255, 0.979);
+}
+#mainNav.navbar-shrink .navbar-brand {
+    color: #161616;
+    font-size: 35px;
+}
+#mainNav.navbar-shrink .nav-link {
+    color: #161616;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-bottom: 0.25rem solid transparent;
+}
+#mainNav.navbar-shrink .nav-link:hover {
+    color: #64a19d;
+}
+#mainNav.navbar-shrink .nav-link:hover .nav-arrow{
+    color: #64a19d;
+}
+#mainNav.navbar-shrink .nav-link:active {
+    color: #467370;
+}
+#mainNav.navbar-shrink .nav-link.active {
+    color: #64a19d;
+    outline: none;
+    border-bottom: 0.25rem solid #64a19d;
+}
+#mainNav .navbar-nav .nav-item:active, #mainNav .navbar-nav .nav-item:focus {
+    outline: none;
+    background-color: transparent;
+}
+.home-header{
+    border-top:100px solid rgb(32, 32, 32);
+}
+
+#members img{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius:50%;
+}
+
+@-webkit-keyframes fadeInRight {
+    0% {
+       opacity: 0;
+       -webkit-transform: translateX(100px);
+    }
+    100% {
+       opacity: 1;
+       -webkit-transform: translateX(0);
+    }
+ }
+ 
+ @keyframes fadeInRight {
+    0% {
+       opacity: 0;
+       transform: translateX(100px);
+    }
+    100% {
+       opacity: 1;
+       transform: translateX(0);
+    }
+ }
+ 
+ .fadeInRight {
+    -webkit-animation-name: fadeInRight;
+    animation-name: fadeInRight;
+ }
+
+ .animated_words {
+    background-repeat: no-repeat;
+    background-position: left top;
+    -webkit-animation-duration: 3s;
+    animation-duration: 3s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    background-color: rgb(88, 88, 88);
+    margin-top: 2%;
+    margin-bottom: 5%;
+ }
+
+ .prof_icon{
+    -webkit-animation-duration: 3s;
+    animation-duration: 3s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+ }
+
+ .delay2sec{
+    animation-delay: 2s;
+ }
+
+ @-webkit-keyframes moveToRight {
+    0% {
+       -webkit-transform: translateX(0);
+    }
+    100% {
+       -webkit-transform: translateX(650px);
+    }
+ }
+ 
+ @keyframes moveToRight {
+    0% {
+       transform: translateX(0);
+    }
+    100% {
+       transform: translateX(650px);
+    }
+ }
+
+ .moveToRight {
+    -webkit-animation-name: moveToRight;
+    animation-name: moveToRight;
+ }
+
+ .ninja_run{
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    height: 200px;
+ }
+
+ @-webkit-keyframes moveToLeft {
+    0% {
+       -webkit-transform: translateX(750px);
+    }
+    100% {
+       -webkit-transform: translateX(0);
+    }
+ }
+ 
+ @keyframes moveToLeft {
+    0% {
+       transform: translateX(750px);
+    }
+    100% {
+       transform: translateX(0);
+    }
+ }
+
+ .moveToLeft {
+    -webkit-animation-name: moveToLeft;
+    animation-name: moveToLeft;
+ }
+
+ @media only screen and (max-width:480px){
+    .moveToLeft{
+        display: none;
+    }
+    .moveToRight{
+        display: none;
+    }
+    .navbar-shrink{
+        width: 100vw !important;
+    }
+    .none-collapse{
+        display: none;
+    }
+    .light-collapse{
+        color: rgb(249, 193, 0);
+        font-weight: 500;
+    }
+    h4{
+        margin-top: 20px;
+    }
+ }

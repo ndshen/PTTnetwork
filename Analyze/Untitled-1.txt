@@ -1,27 +1,14 @@
 db.Group.aggregate([
     {
         "$match":{
-            "date":"2018-09-30",
-            "day_range":7,
-            "inter_gate":10
+            inter_gate:15,
+            official:1
         }
     },
     {
         "$project":{
-            "_id": 0,
-            "overall_group_list":1
+            date:"$date",
+            art_size:{"$size":"$overall_groupArticle_list"}
         }
-    },
-    {
-        "$unwind": "$overall_group_list"
-    },
-    {
-        "$project":{
-            "group_id":"$overall_group_list.overall_group_id",
-            "group_count":{"$size":"$overall_group_list.overall_group_users"}
-        }
-    },
-    {
-        "$sort":{"group_id":1}
     }
 ])

@@ -3,3 +3,5 @@ gateSimulation/
 formal_log.txt
 *.csv
 Analyze/comments.txt
+node_modules/
+__MACOSX
