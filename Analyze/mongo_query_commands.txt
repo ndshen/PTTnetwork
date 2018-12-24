@@ -245,7 +245,8 @@ db.Group.aggregate([
     {
         "$match":{
             "date":"2018-09-30",
-            "day_range":7
+            "day_range":7,
+            "official":1
         }
     },
     {
@@ -269,11 +270,6 @@ db.Group.aggregate([
     },
     {
         "$unwind":"$internal_groups"
-    },
-    {
-        "$match":{
-            "internal_groups.internal_group_id":0
-        }
     },
     {
         "$project":{
@@ -314,6 +310,10 @@ db.Group.update({date:"2018-09-19", day_range:1},{$set:{
 }}, false)
 
 
-db.Collection.update({},{$set:{
+db.Group.update({},{$set:{
+    "official":0
+}}, false, true)
+
+db.Group.update({inter_gate:10, day_range:7, date:"2018-09-30"},{$set:{
     "official":1
 }}, false, true)
